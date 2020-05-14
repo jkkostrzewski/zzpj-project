@@ -17,3 +17,9 @@ notifications:
 branches:
   only:
     - master
+
+after_script:
+  - echo JAVA_HOME = ${JAVA_HOME}
+  - echo PATH = ${PATH}
+  - ls ${JAVA_HOME}
+  - java -version
