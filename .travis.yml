@@ -1,5 +1,14 @@
 language: java
-jdk: openjdk14
+
+before_script:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+
+jobs:
+  include:
+    - stage: build
+      env: JDK=14
+      script: source ./install-jdk.sh --feature 14
+
 notifications:
   slack: zachaczcompany:z82lfise3i91VIZM8ghqN9Q0
     # on_success = change - default
