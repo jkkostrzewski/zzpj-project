@@ -1,13 +1,6 @@
 language: java
 
-before_script:
-  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-
-jobs:
-  include:
-    - stage: build
-      env: JDK=14
-      script: source ./install-jdk.sh --feature 14
+jdk: openjdk14
 
 notifications:
   slack: zachaczcompany:z82lfise3i91VIZM8ghqN9Q0
@@ -17,9 +10,3 @@ notifications:
 branches:
   only:
     - master
-
-after_script:
-  - echo JAVA_HOME = ${JAVA_HOME}
-  - echo PATH = ${PATH}
-  - ls ${JAVA_HOME}
-  - java -version
