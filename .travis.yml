@@ -3,4 +3,7 @@ notifications:
   slack: zachaczcompany:z82lfise3i91VIZM8ghqN9Q0
     # on_success = change - default
     # of_failure = always - default
-    if: branch = master
+
+branches:
+  only:
+    - master
