@@ -1,4 +1,5 @@
 language: java
+jdk: openjdk14
 notifications:
   slack: zachaczcompany:z82lfise3i91VIZM8ghqN9Q0
     # on_success = change - default
