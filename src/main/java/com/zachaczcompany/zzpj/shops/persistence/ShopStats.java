@@ -5,17 +5,17 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import static lombok.AccessLevel.PRIVATE;
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PACKAGE;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PACKAGE)
 public class ShopStats {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     private int maxCapacity;

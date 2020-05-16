@@ -1,6 +1,5 @@
 package com.zachaczcompany.zzpj.shops.persistence;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static lombok.AccessLevel.PACKAGE;
+
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
 public class DailyOpenHours {
     private DayOfWeek dayOfWeek;

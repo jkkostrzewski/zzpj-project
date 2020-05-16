@@ -1,6 +1,5 @@
 package com.zachaczcompany.zzpj.shops.persistence;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Pattern;
 
+import static lombok.AccessLevel.PACKAGE;
+
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
 public class Address {
     private String city;
