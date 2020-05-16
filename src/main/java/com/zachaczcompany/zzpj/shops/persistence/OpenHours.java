@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -22,8 +23,14 @@ public class OpenHours {
     private Set<DailyOpenHours> openHours = new HashSet<>();
 
     public OpenHours(Set<DailyOpenHours> openHours) {
-        assert containsEveryDayOfWeek(openHours);
+        checkIfContainsEveryDayOfWeek(openHours);
         this.openHours = openHours;
+    }
+
+    private void checkIfContainsEveryDayOfWeek(Set<DailyOpenHours> openHours) {
+        if (!containsEveryDayOfWeek(openHours)) {
+            throw new IllegalArgumentException("Every day of week must be covered");
+        }
     }
 
     private boolean containsEveryDayOfWeek(Set<DailyOpenHours> openHours) {
@@ -31,7 +38,7 @@ public class OpenHours {
             return false;
         }
 
-        List<DayOfWeek> days = Arrays.asList(DayOfWeek.values());
+        List<DayOfWeek> days = new ArrayList<>(Arrays.asList(DayOfWeek.values()));
         openHours.forEach(daily -> days.remove(daily.getDayOfWeek()));
         return days.isEmpty();
     }
