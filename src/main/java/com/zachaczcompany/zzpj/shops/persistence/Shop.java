@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.shops.persistence;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,7 @@ import javax.persistence.OneToOne;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Shop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

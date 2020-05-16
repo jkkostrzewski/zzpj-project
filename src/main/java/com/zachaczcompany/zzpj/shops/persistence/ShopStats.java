@@ -8,9 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Entity
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = PRIVATE)
 public class ShopStats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,7 @@ public class ShopStats {
         this.peopleInside += count;
     }
 
-    void addToQueue(int count) {
+    public void addToQueue(int count) {
         peopleInQueue += count;
     }
 }

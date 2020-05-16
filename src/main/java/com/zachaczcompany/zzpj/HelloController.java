@@ -29,7 +29,7 @@ public class HelloController {
     public Shop hello() {
         Address address = new Address("Łódź", "Łódzka", 1, "14a", "90-004");
         OpenHours openHours = new OpenHours(DailyOpenHours.always(LocalTime.NOON, LocalTime.MIDNIGHT));
-        ShopDetails shopDetails = new ShopDetails(StockType.SERVICE, new Localization(), openHours);
+        ShopDetails shopDetails = new ShopDetails(StockType.SERVICE, new Localization(0, 0), openHours);
         ShopStats shopStats = new ShopStats(35, 35, 0);
         Shop shop = new Shop("Sklep 1", address, shopDetails, shopStats);
         return shopRepository.save(shop);
