@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
+import java.util.Random;
 
 @RestController
 public class HelloController {
@@ -27,10 +28,10 @@ public class HelloController {
 
     @GetMapping("shop")
     public Shop hello() {
-        Address address = new Address("Łódź", "Łódzka", 1, "14a", "90-004");
+        Address address = new Address("Łódź", "Łódzka", new Random().nextInt(100), "14a", "90-004");
         OpenHours openHours = new OpenHours(DailyOpenHours.always(LocalTime.NOON, LocalTime.MIDNIGHT));
-        ShopDetails shopDetails = new ShopDetails(StockType.SERVICE, new Localization(0, 0), openHours);
-        ShopStats shopStats = new ShopStats(35, 35, 0);
+        ShopDetails shopDetails = new ShopDetails(StockType.SERVICE, new Localization(new Random().nextDouble(), new Random().nextDouble()), openHours);
+        ShopStats shopStats = new ShopStats(new Random().nextInt(100), new Random().nextInt(100), new Random().nextInt(100));
         Shop shop = new Shop("Sklep 1", address, shopDetails, shopStats);
         return shopRepository.save(shop);
     }

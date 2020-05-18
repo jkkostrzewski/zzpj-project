@@ -1,6 +1,9 @@
 package com.zachaczcompany.zzpj.shops.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.zachaczcompany.zzpj.commons.ReadOnlyRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-public interface ShopRepository extends JpaRepository<Shop, Long> {
+@RepositoryRestResource(path = "shops")
+public interface ShopRepository extends ReadOnlyRepository<Shop, Long> {
+
 }

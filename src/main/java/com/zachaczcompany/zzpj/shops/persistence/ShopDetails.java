@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.shops.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Entity
 @NoArgsConstructor(access = PACKAGE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ShopDetails {
     @Id
     @GeneratedValue(strategy = IDENTITY)
