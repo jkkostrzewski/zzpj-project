@@ -78,8 +78,7 @@ public class LocationRestService {
                                            double latEnd, double lonEnd) {
         String httpUrl = restApiUrl + "directions/driving/" + buildCoordsString(latStart, lonStart, latEnd, lonEnd)
                 + "?key=" + key;
-        UriComponents uri = UriComponentsBuilder
-                .fromHttpUrl(httpUrl)
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(httpUrl)
                 .build();
         return restTemplate
                 .getForEntity(uri.encode().toUri(), RoutingResponse.class)
