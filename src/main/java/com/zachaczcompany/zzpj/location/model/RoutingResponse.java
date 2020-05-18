@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-public class RoutingLocationDataResponse {
+public class RoutingResponse {
     private List<Route> routes;
 }

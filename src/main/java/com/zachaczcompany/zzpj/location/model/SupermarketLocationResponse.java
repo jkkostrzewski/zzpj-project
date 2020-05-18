@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LocationDataResponse {
-    private String place_id;
+public class SupermarketLocationResponse {
+    private String name;
     private String lat;
     private String lon;
-    private String display_name;
+    private double distance;
 }
