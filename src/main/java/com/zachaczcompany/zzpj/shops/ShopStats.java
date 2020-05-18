@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ShopStats {
+class ShopStats {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -26,13 +26,13 @@ public class ShopStats {
 
     private int peopleInQueue;
 
-    public ShopStats(int maxCapacity, int peopleInside, int peopleInQueue) {
+    ShopStats(int maxCapacity, int peopleInside, int peopleInQueue) {
         this.maxCapacity = maxCapacity;
         this.peopleInside = peopleInside;
         this.peopleInQueue = peopleInQueue;
     }
 
-    public void moveInsideFromQueue(int count) {
+    void moveInsideFromQueue(int count) {
         if (peopleInQueue > count) {
             throw new IllegalArgumentException("Cannot move more people than queue size!");
         }
@@ -41,7 +41,7 @@ public class ShopStats {
         this.peopleInside += count;
     }
 
-    public void addToQueue(int count) {
+    void addToQueue(int count) {
         peopleInQueue += count;
     }
 }

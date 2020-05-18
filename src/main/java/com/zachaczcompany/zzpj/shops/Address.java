@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
-public class Address {
+class Address {
     private String city;
 
     private String street;
