@@ -3,6 +3,7 @@ spring:
     console:
       enabled: true
       path: /console
+
 locationiq:
   rest-api:
     region: eu1
