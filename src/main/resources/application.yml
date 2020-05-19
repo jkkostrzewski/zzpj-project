@@ -9,3 +9,10 @@ application:
     secretKey: securesecuresecuresecuresecuresecuresecuresecure
     tokenPrefix: "Bearer "
     tokenExpirationAfterDays: 14
+
+locationiq:
+  rest-api:
+    region: eu1
+    format: json
+    url: https://${locationiq.rest-api.region}.locationiq.com/v1/
+    key: c6e6dd0380d596
