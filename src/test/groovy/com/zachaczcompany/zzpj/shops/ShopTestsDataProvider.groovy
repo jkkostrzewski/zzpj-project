@@ -11,6 +11,7 @@ import com.zachaczcompany.zzpj.shops.persistence.StockType
 
 import java.time.DayOfWeek
 import java.time.LocalTime
+import java.util.stream.Collectors
 
 class ShopTestsDataProvider {
     static Address anyAddress() {
@@ -26,11 +27,9 @@ class ShopTestsDataProvider {
     }
 
     static Set<DailyOpenHours> anyDailyOpenHoursSet() {
-        Set<DailyOpenHours> openHours = new HashSet<>();
-        Arrays.stream(DayOfWeek.values()).forEach(day -> {
-            openHours.add(new DailyOpenHours(day, LocalTime.NOON, LocalTime.MIDNIGHT))
-        })
-        return openHours
+        return Arrays.stream(DayOfWeek.values())
+                .map(day -> new DailyOpenHours(day, LocalTime.NOON, LocalTime.MIDNIGHT))
+                .collect(Collectors.toSet())
     }
 
     static OpenHours anyOpenHours() {
