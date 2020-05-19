@@ -1,7 +1,7 @@
 package com.zachaczcompany.zzpj.security.auth.database;
 
-import com.zachaczcompany.zzpj.security.auth.ApplicationUser;
-import com.zachaczcompany.zzpj.security.configuration.ApplicationUserRole;
+import com.zachaczcompany.zzpj.security.auth.User;
+import com.zachaczcompany.zzpj.security.configuration.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Entity
 @Data
 @NoArgsConstructor
-public class ApplicationUserEntity {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,18 +28,18 @@ public class ApplicationUserEntity {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public ApplicationUserEntity(String username, String password, ApplicationUserRole applicationUserRole) {
+    public UserEntity(String username, String password, UserRole userRole) {
         this.username = username;
         this.password = password;
-        this.permissions = getPermissions(applicationUserRole.getGrantedAuthority());
+        this.permissions = getPermissions(userRole.getGrantedAuthority());
         this.isAccountNonExpired = true;
         this.isAccountNonLock = true;
         this.isCredentialsNonExpired = true;
         this.isEnabled = true;
     }
 
-    public ApplicationUser getApplicationUser() {
-        return new ApplicationUser(username, password, getGrantedAuthority(), isAccountNonExpired,
+    public User getApplicationUser() {
+        return new User(username, password, getGrantedAuthority(), isAccountNonExpired,
                 isAccountNonLock, isCredentialsNonExpired, isEnabled);
     }
 

@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/register")
 public class RegistrationController {
-    UserService userService;
+    UserRegistrationService userRegistrationService;
 
-    public RegistrationController(UserService userService) {
-        this.userService = userService;
+    public RegistrationController(UserRegistrationService userRegistrationService) {
+        this.userRegistrationService = userRegistrationService;
     }
 
     @PostMapping("/owner")
     public ResponseEntity signUpOwner(@RequestBody UserSignUp userSignUp) {
         try {
-            userService.registerNewOwner(userSignUp);
+            userRegistrationService.registerNewOwner(userSignUp);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -30,7 +30,7 @@ public class RegistrationController {
     @PostMapping("/employee")
     public ResponseEntity signUpEmployee(@RequestBody UserSignUp userSignUp) {
         try {
-            userService.registerNewEmployee(userSignUp);
+            userRegistrationService.registerNewEmployee(userSignUp);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }

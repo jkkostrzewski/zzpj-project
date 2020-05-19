@@ -53,15 +53,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-
-        String token = Jwts.builder()
-                .setSubject(authResult.getName())
-                .claim("authorities", authResult.getAuthorities())
-                .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
-                .signWith(this.secretKey)
-                .compact();
-
+        String token = getToken(authResult);
         response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
+    }
+
+    private String getToken(Authentication authResult) {
+        return Jwts.builder()
+                    .setSubject(authResult.getName())
+                    .claim("authorities", authResult.getAuthorities())
+                    .setIssuedAt(new Date())
+                    .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
+                    .signWith(this.secretKey)
+                    .compact();
     }
 }

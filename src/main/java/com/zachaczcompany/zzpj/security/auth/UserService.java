@@ -8,17 +8,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ApplicationUserService implements UserDetailsService {
-    private final ApplicationUserDao applicationUserDao;
+public class UserService implements UserDetailsService {
+    private final UserDao userDao;
 
     @Autowired
-    public ApplicationUserService(@Qualifier("database") ApplicationUserDao applicationUserDao) {
-        this.applicationUserDao = applicationUserDao;
+    public UserService(@Qualifier("database") UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return applicationUserDao
+        return userDao
                 .selectApplicationUserByUsername(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(String.format("Username %s not found", username)));

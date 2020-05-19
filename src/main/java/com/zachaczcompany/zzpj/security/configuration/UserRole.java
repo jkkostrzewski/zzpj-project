@@ -7,18 +7,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.zachaczcompany.zzpj.security.configuration.ApplicationUserPermission.QUEUE_WRITE;
-import static com.zachaczcompany.zzpj.security.configuration.ApplicationUserPermission.SHOP_WRITE;
+import static com.zachaczcompany.zzpj.security.configuration.UserPermission.QUEUE_WRITE;
+import static com.zachaczcompany.zzpj.security.configuration.UserPermission.SHOP_WRITE;
 
 
-public enum ApplicationUserRole {
+public enum UserRole {
     SHOP_OWNER(Sets.newHashSet(QUEUE_WRITE,SHOP_WRITE)),
     SHOP_EMPLOYEE(Sets.newHashSet(QUEUE_WRITE));
 
     @Getter
-    private final Set<ApplicationUserPermission> permission;
+    private final Set<UserPermission> permission;
 
-    ApplicationUserRole(Set<ApplicationUserPermission> permission) {
+    UserRole(Set<UserPermission> permission) {
         this.permission = permission;
     }
 

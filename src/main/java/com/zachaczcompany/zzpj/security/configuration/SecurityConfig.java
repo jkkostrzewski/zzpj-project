@@ -1,6 +1,6 @@
 package com.zachaczcompany.zzpj.security.configuration;
 
-import com.zachaczcompany.zzpj.security.auth.ApplicationUserService;
+import com.zachaczcompany.zzpj.security.auth.UserService;
 import com.zachaczcompany.zzpj.security.jwt.JwtConfig;
 import com.zachaczcompany.zzpj.security.jwt.JwtTokenVerifier;
 import com.zachaczcompany.zzpj.security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
@@ -20,16 +20,16 @@ import javax.crypto.SecretKey;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationUserService applicationUserService;
+    private final UserService userService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService applicationUserService, SecretKey secretKey, JwtConfig jwtConfig) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService, SecretKey secretKey, JwtConfig jwtConfig) {
         this.passwordEncoder = passwordEncoder;
-        this.applicationUserService = applicationUserService;
+        this.userService = userService;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
     }
@@ -59,7 +59,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(applicationUserService);
+        provider.setUserDetailsService(userService);
         return provider;
     }
 }
