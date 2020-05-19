@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PACKAGE)
-public class Localization {
+class Localization {
     private double latitude;
     private double longitude;
 }

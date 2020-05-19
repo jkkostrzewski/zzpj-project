@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,14 +17,14 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
-public class DailyOpenHours {
+class DailyOpenHours {
     private DayOfWeek dayOfWeek;
 
     private LocalTime openFrom;
 
     private LocalTime openTo;
 
-    public static Set<DailyOpenHours> always(LocalTime openFrom, LocalTime openTo) {
+    static Set<DailyOpenHours> always(LocalTime openFrom, LocalTime openTo) {
         return Stream.of(DayOfWeek.values()).map(day -> new DailyOpenHours(day, openFrom, openTo)).collect(Collectors.toSet());
     }
 }
