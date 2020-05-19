@@ -36,52 +36,48 @@ public class LocationRestService {
     public List<LocationResponse> getLocations(String query) {
         String httpUrl = restApiUrl + "search.php?key=" + key;
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(httpUrl)
-                .queryParam("q", query)
-                .queryParam("format", format)
-                .build();
-        return restTemplate.exchange(uri.encode()
-                .toUri(), HttpMethod.GET, null, new ParameterizedTypeReference<List<LocationResponse>>() {
-        }).getBody();
+                                                .queryParam("q", query)
+                                                .queryParam("format", format)
+                                                .build();
+        ParameterizedTypeReference<List<LocationResponse>> type = new ParameterizedTypeReference<>() {};
+        return restTemplate.exchange(uri.encode().toUri(), HttpMethod.GET, null, type)
+                           .getBody();
     }
 
     public LocationResponse getLocation(double lat, double lon) {
         String httpUrl = restApiUrl + "reverse.php?key=" + key;
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(httpUrl)
-                .queryParam("lat", lat)
-                .queryParam("lon", lon)
-                .queryParam("format", format)
-                .build();
-        return restTemplate
-                .getForEntity(uri.encode().toUri(), LocationResponse.class)
-                .getBody();
+                                                .queryParam("lat", lat)
+                                                .queryParam("lon", lon)
+                                                .queryParam("format", format)
+                                                .build();
+        return restTemplate.getForEntity(uri.encode().toUri(), LocationResponse.class)
+                           .getBody();
     }
 
     public List<SupermarketLocationResponse> getNearbySupermarkets(double lat, double lon, double radius) {
         String httpUrl = restApiUrl + "nearby.php?key=" + key;
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(httpUrl)
-                .queryParam("lat", lat)
-                .queryParam("lon", lon)
-                .queryParam("tag", "supermarket")
-                .queryParam("radius", radius)
-                .queryParam("format", format)
-                .build();
-        return restTemplate.exchange(uri.encode()
-                .toUri(), HttpMethod.GET, null, new ParameterizedTypeReference<List<SupermarketLocationResponse>>() {
-        }).getBody();
+                                                .queryParam("lat", lat)
+                                                .queryParam("lon", lon)
+                                                .queryParam("tag", "supermarket")
+                                                .queryParam("radius", radius)
+                                                .queryParam("format", format)
+                                                .build();
+        ParameterizedTypeReference<List<SupermarketLocationResponse>> type = new ParameterizedTypeReference<>() {};
+        return restTemplate.exchange(uri.encode().toUri(), HttpMethod.GET, null, type)
+                           .getBody();
     }
 
     private String buildCoordsString(double latStart, double lonStart, double latEnd, double lonEnd) {
         return latStart + "," + lonStart + ";" + latEnd + "," + lonEnd;
     }
 
-    public RoutingResponse getFastestRoute(double latStart, double lonStart,
-                                           double latEnd, double lonEnd) {
-        String httpUrl = restApiUrl + "directions/driving/" + buildCoordsString(latStart, lonStart, latEnd, lonEnd)
-                + "?key=" + key;
+    public RoutingResponse getFastestRoute(double latStart, double lonStart, double latEnd, double lonEnd) {
+        String httpUrl = restApiUrl + "directions/driving/" + buildCoordsString(latStart, lonStart, latEnd, lonEnd) + "?key=" + key;
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(httpUrl)
-                .build();
-        return restTemplate
-                .getForEntity(uri.encode().toUri(), RoutingResponse.class)
-                .getBody();
+                                                .build();
+        return restTemplate.getForEntity(uri.encode().toUri(), RoutingResponse.class)
+                           .getBody();
     }
 }
