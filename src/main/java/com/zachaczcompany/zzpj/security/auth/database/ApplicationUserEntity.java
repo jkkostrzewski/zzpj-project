@@ -28,16 +28,6 @@ public class ApplicationUserEntity {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public ApplicationUserEntity(ApplicationUser applicationUser) {
-        this.username = applicationUser.getUsername();
-        this.password = applicationUser.getPassword();
-        this.permissions = getPermissions(applicationUser.getAuthorities());
-        this.isAccountNonExpired = applicationUser.isAccountNonExpired();
-        this.isAccountNonLock = applicationUser.isAccountNonLocked();
-        this.isCredentialsNonExpired = applicationUser.isCredentialsNonExpired();
-        this.isEnabled = applicationUser.isEnabled();
-    }
-
     public ApplicationUserEntity(String username, String password, ApplicationUserRole applicationUserRole) {
         this.username = username;
         this.password = password;
@@ -49,10 +39,9 @@ public class ApplicationUserEntity {
     }
 
     public ApplicationUser getApplicationUser() {
-        return new ApplicationUser(username, password, getGrantedAuthority(),isAccountNonExpired,
+        return new ApplicationUser(username, password, getGrantedAuthority(), isAccountNonExpired,
                 isAccountNonLock, isCredentialsNonExpired, isEnabled);
     }
-
 
     private Set<SimpleGrantedAuthority> getGrantedAuthority() {
         return permissions.stream()
