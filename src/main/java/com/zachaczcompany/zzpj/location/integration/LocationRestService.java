@@ -5,7 +5,6 @@ import com.zachaczcompany.zzpj.location.model.RoutingResponse;
 import com.zachaczcompany.zzpj.location.model.SupermarketLocationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-@PropertySource("classpath:location.yml")
 @Component
 public class LocationRestService {
     private final String key;
