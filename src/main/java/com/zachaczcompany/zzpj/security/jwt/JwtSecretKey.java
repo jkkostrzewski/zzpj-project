@@ -9,7 +9,6 @@ import javax.crypto.SecretKey;
 
 @Configuration
 public class JwtSecretKey {
-
     private final JwtConfig jwtConfig;
 
     @Autowired

@@ -2,8 +2,8 @@ package com.zachaczcompany.zzpj.security.configuration;
 
 import com.zachaczcompany.zzpj.security.auth.UserService;
 import com.zachaczcompany.zzpj.security.jwt.JwtConfig;
+import com.zachaczcompany.zzpj.security.jwt.JwtCredentialsAuthenticationRequest;
 import com.zachaczcompany.zzpj.security.jwt.JwtTokenVerifier;
-import com.zachaczcompany.zzpj.security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,13 +40,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
-                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
+                .addFilter(new JwtCredentialsAuthenticationRequest(authenticationManager(), jwtConfig, secretKey))
+                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtCredentialsAuthenticationRequest.class)
                 .authorizeRequests()
                 .antMatchers("/login", "/register/**").permitAll()
                 .anyRequest()
                 .authenticated();
-
         http.headers().frameOptions().disable();
     }
 

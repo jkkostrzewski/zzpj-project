@@ -7,8 +7,6 @@ import com.zachaczcompany.zzpj.security.jwt.exceptions.UserAlreadyExistsExceptio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import static com.zachaczcompany.zzpj.security.configuration.UserRole.SHOP_EMPLOYEE;
 import static com.zachaczcompany.zzpj.security.configuration.UserRole.SHOP_OWNER;
 
@@ -22,17 +20,16 @@ public class UserRegistrationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerNewOwner(UserSignUp userSignUp) throws UserAlreadyExistsException {
-        registerNewUserAccount(userSignUp, SHOP_OWNER);
+    public void registerOwner(UserSignUp userSignUp) throws UserAlreadyExistsException {
+        registerUserAccount(userSignUp, SHOP_OWNER);
     }
 
-    public void registerNewEmployee(UserSignUp userSignUp) throws UserAlreadyExistsException {
-        registerNewUserAccount(userSignUp, SHOP_EMPLOYEE);
+    public void registerEmployee(UserSignUp userSignUp) throws UserAlreadyExistsException {
+        registerUserAccount(userSignUp, SHOP_EMPLOYEE);
     }
 
-    private void registerNewUserAccount(UserSignUp userSignUp, UserRole userRole) throws UserAlreadyExistsException {
-        Optional<UserEntity> applicationUser = userRepository.findByUsername(userSignUp.getUsername());
-        if (applicationUser.isPresent()) {
+    private void registerUserAccount(UserSignUp userSignUp, UserRole userRole) throws UserAlreadyExistsException {
+        if (userRepository.existsByUsername(userSignUp.getUsername())) {
             throw new UserAlreadyExistsException("There is an user with that username: " + userSignUp.getUsername());
         }
 

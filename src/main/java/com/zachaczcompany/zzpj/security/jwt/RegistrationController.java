@@ -20,7 +20,7 @@ public class RegistrationController {
     @PostMapping("/owner")
     public ResponseEntity signUpOwner(@RequestBody UserSignUp userSignUp) {
         try {
-            userRegistrationService.registerNewOwner(userSignUp);
+            userRegistrationService.registerOwner(userSignUp);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -30,7 +30,7 @@ public class RegistrationController {
     @PostMapping("/employee")
     public ResponseEntity signUpEmployee(@RequestBody UserSignUp userSignUp) {
         try {
-            userRegistrationService.registerNewEmployee(userSignUp);
+            userRegistrationService.registerEmployee(userSignUp);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
