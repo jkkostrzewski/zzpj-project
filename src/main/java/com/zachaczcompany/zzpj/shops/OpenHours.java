@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,19 +14,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static javax.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 @Embeddable
 @Getter
 @NoArgsConstructor(access = PACKAGE)
-public class OpenHours {
+class OpenHours {
     @Setter(PRIVATE)
-    @ElementCollection
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "DAILY_OPEN_HOURS", joinColumns = @JoinColumn(name = "OPEN_HOURS_ID"))
     private Set<DailyOpenHours> openHours = Set.of();
 
-    public OpenHours(Set<DailyOpenHours> openHours) {
+    OpenHours(Set<DailyOpenHours> openHours) {
         checkIfContainsEveryDayOfWeek(openHours);
         this.openHours = openHours;
     }
