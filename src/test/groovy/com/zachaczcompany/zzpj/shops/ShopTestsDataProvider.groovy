@@ -1,13 +1,13 @@
 package com.zachaczcompany.zzpj.shops
 
-import com.zachaczcompany.zzpj.shops.persistence.Address
-import com.zachaczcompany.zzpj.shops.persistence.DailyOpenHours
-import com.zachaczcompany.zzpj.shops.persistence.Localization
-import com.zachaczcompany.zzpj.shops.persistence.OpenHours
-import com.zachaczcompany.zzpj.shops.persistence.Shop
-import com.zachaczcompany.zzpj.shops.persistence.ShopDetails
-import com.zachaczcompany.zzpj.shops.persistence.ShopStats
-import com.zachaczcompany.zzpj.shops.persistence.StockType
+import com.zachaczcompany.zzpj.shops.Address
+import com.zachaczcompany.zzpj.shops.DailyOpenHours
+import com.zachaczcompany.zzpj.shops.Localization
+import com.zachaczcompany.zzpj.shops.OpenHours
+import com.zachaczcompany.zzpj.shops.Shop
+import com.zachaczcompany.zzpj.shops.ShopDetails
+import com.zachaczcompany.zzpj.shops.ShopStats
+import com.zachaczcompany.zzpj.shops.StockType
 
 import java.time.DayOfWeek
 import java.time.LocalTime

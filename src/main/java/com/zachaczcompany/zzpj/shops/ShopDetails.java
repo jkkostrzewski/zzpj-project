@@ -1,5 +1,6 @@
-package com.zachaczcompany.zzpj.shops.persistence;
+package com.zachaczcompany.zzpj.shops;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +17,8 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Entity
 @NoArgsConstructor(access = PACKAGE)
-public class ShopDetails {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+class ShopDetails {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -32,13 +34,13 @@ public class ShopDetails {
     @Embedded
     private OpenHours openHours;
 
-    public ShopDetails(StockType stockType, Localization localization, OpenHours openHours) {
+    ShopDetails(StockType stockType, Localization localization, OpenHours openHours) {
         this.stockType = stockType;
         this.localization = localization;
         this.openHours = openHours;
     }
 
-    public Set<DailyOpenHours> getOpenHours() {
+    Set<DailyOpenHours> getOpenHours() {
         return openHours.getOpenHours();
     }
 }
