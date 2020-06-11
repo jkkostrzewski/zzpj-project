@@ -4,6 +4,12 @@ spring:
       enabled: true
       path: /console
 
+application:
+  jwt:
+    secretKey: securesecuresecuresecuresecuresecuresecuresecure
+    tokenPrefix: "Bearer "
+    tokenExpirationAfterDays: 14
+
 locationiq:
   rest-api:
     region: eu1
