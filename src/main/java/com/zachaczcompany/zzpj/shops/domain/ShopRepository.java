@@ -1,9 +1,9 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "shops")
-interface ShopRepository extends JpaRepository<Shop, Long>, JpaSpecificationExecutor<Shop> {
+public interface ShopRepository extends JpaRepository<Shop, Long>, JpaSpecificationExecutor<Shop> {
 }

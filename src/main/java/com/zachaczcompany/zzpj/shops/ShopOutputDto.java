@@ -1,20 +1,23 @@
 package com.zachaczcompany.zzpj.shops;
 
+import com.zachaczcompany.zzpj.shops.domain.Address;
+import com.zachaczcompany.zzpj.shops.domain.Localization;
+import com.zachaczcompany.zzpj.shops.domain.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-class ShopOutputDto {
+public class ShopOutputDto {
     private long id;
     private String name;
     private Address address;
     private Localization localization;
 
-    ShopOutputDto(Shop shop) {
+    public ShopOutputDto(Shop shop) {
         this.id = shop.getId();
         this.name = shop.getName();
         this.address = shop.getAddress();
-        this.localization = shop.getDetails().getLocalization();
+        this.localization = shop.getLocalization();
     }
 }
