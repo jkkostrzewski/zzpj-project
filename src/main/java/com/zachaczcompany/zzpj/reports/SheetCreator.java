@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.raports;
+package com.zachaczcompany.zzpj.reports;
 
 import io.vavr.Tuple2;
 import org.apache.poi.ss.usermodel.*;
