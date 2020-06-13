@@ -11,7 +11,7 @@ public class SheetCreator {
     private final static int CELL_WIDTH_24_CHARS = 24 * 256;
 
     private final CellStyle stringCellStyle;
-    private final CellStyle salaryCellStyle;
+    private final CellStyle doubleCellStyle;
     private final CellStyle integerCellStyle;
 
     private final Workbook excelWorkbook;
@@ -25,7 +25,7 @@ public class SheetCreator {
         currentRow = 0;
         font = StylesCreator.defaultFont(excelWorkbook);
         stringCellStyle = StylesCreator.stringCellStyle(excelWorkbook);
-        salaryCellStyle = StylesCreator.salaryCellStyle(excelWorkbook);
+        doubleCellStyle = StylesCreator.doubleCellStyle(excelWorkbook);
         integerCellStyle = StylesCreator.integerCellStyle(excelWorkbook);
 
         createHeaderRow(columnNames);
@@ -63,7 +63,7 @@ public class SheetCreator {
             return stringCellStyle;
         }
 
-        static CellStyle salaryCellStyle(Workbook workbook) {
+        static CellStyle doubleCellStyle(Workbook workbook) {
             CellStyle salaryCellStyle = workbook.createCellStyle();
             salaryCellStyle.setDataFormat(workbook.getCreationHelper()
                                                   .createDataFormat()
@@ -106,6 +106,13 @@ public class SheetCreator {
             Cell cell = newCell();
             cell.setCellValue(value);
             cell.setCellStyle(stringCellStyle);
+            return this;
+        }
+
+        public RowBuilder cell(Double value) {
+            Cell cell = newCell();
+            cell.setCellValue(value);
+            cell.setCellStyle(doubleCellStyle);
             return this;
         }
 
