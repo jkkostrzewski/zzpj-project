@@ -1,6 +1,7 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,7 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-class ShopStats {
+public class ShopStats {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -32,16 +33,21 @@ class ShopStats {
         this.peopleInQueue = peopleInQueue;
     }
 
-    void moveInsideFromQueue(int count) {
-        if (peopleInQueue > count) {
-            throw new IllegalArgumentException("Cannot move more people than queue size!");
+    void updatePeopleInQueue(int delta) throws IllegalShopOperation {
+        if (peopleInQueue + delta < 0) {
+            throw new IllegalShopOperation("Queue length cannot be negative!");
         }
-
-        this.peopleInQueue -= count;
-        this.peopleInside += count;
+        peopleInQueue += delta;
     }
 
-    void addToQueue(int count) {
-        peopleInQueue += count;
+    void updatePeopleInside(int delta) throws IllegalShopOperation {
+        if (peopleInside + delta < 0) {
+            throw new IllegalShopOperation("Number of people inside cannot be negative!");
+        }
+
+        if (peopleInside + delta > maxCapacity) {
+            throw new IllegalShopOperation("Inside cannot be that many people!");
+        }
+        peopleInside += delta;
     }
 }

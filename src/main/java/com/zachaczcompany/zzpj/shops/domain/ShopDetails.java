@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
