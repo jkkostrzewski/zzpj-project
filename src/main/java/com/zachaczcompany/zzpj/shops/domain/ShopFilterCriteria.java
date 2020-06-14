@@ -137,11 +137,11 @@ public class ShopFilterCriteria {
     }
 
     boolean addressIsNotEmpty() {
-        return address != null;
+        return address != null && !address.equals("");
     }
 
     boolean nameIsNotEmpty() {
-        return name != null;
+        return name != null && !name.equals("");
     }
 
     boolean stockTypeIsNotEmpty() {

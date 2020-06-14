@@ -62,27 +62,7 @@ public class ShopFacade {
     private void updateShopSearchStats(Long shopId, ShopFilterCriteria criteria) {
         Optional<ShopSearch> shopSearch = shopSearchRepository.findByShopId(shopId);
         shopSearch.ifPresent(searchHistory -> {
-            if (criteria.addressIsNotEmpty()) {
-                searchHistory.incrementAddress();
-            }
-            if (criteria.nameIsNotEmpty()) {
-                searchHistory.incrementName();
-            }
-            if (criteria.stockTypeIsNotEmpty()) {
-                searchHistory.incrementStockType();
-            }
-            if (criteria.isOpenIsUsed()) {
-                searchHistory.incrementIsOpen();
-            }
-            if (criteria.canEnterIsUsed()) {
-                searchHistory.incrementCanEnter();
-            }
-            if (criteria.maxQueueLengthIsNotEmpty()) {
-                searchHistory.incrementMaxQueueLength();
-            }
-            if (criteria.maxCapacityIsNotEmpty()) {
-                searchHistory.incrementMaxCapacity();
-            }
+            searchHistory.incrementValues(criteria);
             shopSearchRepository.save(searchHistory);
         });
     }

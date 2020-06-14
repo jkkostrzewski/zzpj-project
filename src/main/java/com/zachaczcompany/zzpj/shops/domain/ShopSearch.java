@@ -12,50 +12,39 @@ import javax.persistence.Id;
 public class ShopSearch {
     @Id
     private Long shopId;
-    private long address;
-    private long name;
-    private long stockType;
-    private long isOpen;
-    private long canEnter;
-    private long maxQueueLength;
-    private long maxCapacity;
+    private long address = 0L;
+    private long name = 0L;
+    private long stockType = 0L;
+    private long isOpen = 0L;
+    private long canEnter = 0L;
+    private long maxQueueLength = 0L;
+    private long maxCapacity = 0L;
 
     public ShopSearch(Long shopId) {    //TODO paluszkiewiczB dodać to wywołanie konstruktora podczas tworzenia nowego sklepu
         this.shopId = shopId;
-        this.address = 0;
-        this.name = 0;
-        this.stockType = 0;
-        this.isOpen = 0;
-        this.canEnter = 0;
-        this.maxQueueLength = 0;
-        this.maxCapacity = 0;
     }
 
-    public void incrementAddress() {
-        this.address++;
-    }
-
-    public void incrementName() {
-        this.name++;
-    }
-
-    public void incrementStockType() {
-        this.stockType++;
-    }
-
-    public void incrementIsOpen() {
-        this.isOpen++;
-    }
-
-    public void incrementCanEnter() {
-        this.canEnter++;
-    }
-
-    public void incrementMaxQueueLength() {
-        this.maxQueueLength++;
-    }
-
-    public void incrementMaxCapacity() {
-        this.maxCapacity++;
+    public void incrementValues(ShopFilterCriteria criteria) {
+        if (criteria.addressIsNotEmpty()) {
+            this.address++;
+        }
+        if (criteria.nameIsNotEmpty()) {
+            this.name++;
+        }
+        if (criteria.stockTypeIsNotEmpty()) {
+            this.stockType++;
+        }
+        if (criteria.isOpenIsUsed()) {
+            this.isOpen++;
+        }
+        if (criteria.canEnterIsUsed()) {
+            this.canEnter++;
+        }
+        if (criteria.maxQueueLengthIsNotEmpty()) {
+            this.maxQueueLength++;
+        }
+        if (criteria.maxCapacityIsNotEmpty()) {
+            this.maxCapacity++;
+        }
     }
 }
