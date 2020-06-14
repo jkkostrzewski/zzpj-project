@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,9 +40,8 @@ public class ShopFacade {
         };
     }
 
-    Shop findShopById(Long id) {
-        return shopRepository.findById(id)
-                             .orElseThrow(() -> new NoSuchElementException("Shop with such id does not exist"));
+    Optional<Shop> findShopById(Long id) {
+        return shopRepository.findById(id);
     }
 
     public Iterable<Shop> findAll(ShopFilterCriteria criteria, Pageable pageable) {

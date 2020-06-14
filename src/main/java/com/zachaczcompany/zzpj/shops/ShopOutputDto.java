@@ -12,13 +12,11 @@ class ShopOutputDto {
     private String name;
     private Address address;
     private Localization localization;
-    private List<Opinion> opinions;
 
     ShopOutputDto(Shop shop) {
         this.id = shop.getId();
         this.name = shop.getName();
         this.address = shop.getAddress();
         this.localization = shop.getDetails().getLocalization();
-        this.opinions = shop.getOpinions();
     }
 }

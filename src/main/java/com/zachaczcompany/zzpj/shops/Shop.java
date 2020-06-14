@@ -3,9 +3,12 @@ package com.zachaczcompany.zzpj.shops;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
@@ -33,21 +36,10 @@ class Shop {
     @OneToOne(fetch = EAGER, cascade = ALL)
     private ShopStats shopStats;
 
-    @ElementCollection
-    private List<Opinion> opinions = new ArrayList<>();
-
     Shop(String name, Address address, ShopDetails details, ShopStats shopStats) {
         this.name = name;
         this.address = address;
         this.details = details;
         this.shopStats = shopStats;
-    }
-
-    void addOpinion(Opinion opinion) {
-        opinions.add(opinion);
-    }
-
-    void removeOpinion(Opinion opinion){
-        opinions.remove(opinion);
     }
 }

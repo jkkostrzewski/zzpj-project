@@ -7,7 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -18,8 +20,8 @@ class Opinion {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long shopId;
+    @OneToOne(cascade = ALL)
+    private Shop shop;
 
     @Column(nullable = false)
     private Integer rate;
@@ -27,8 +29,8 @@ class Opinion {
     @Column(nullable = false)
     private String description;
 
-    Opinion(Long shopId, Integer rate, String description) {
-        this.shopId = shopId;
+    Opinion(Shop shop, Integer rate, String description) {
+        this.shop = shop;
         this.rate = rate;
         this.description = description;
     }

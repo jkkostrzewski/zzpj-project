@@ -7,6 +7,5 @@ import java.util.List;
 
 @Repository
 public interface OpinionRepository extends CrudRepository<Opinion, Long> {
-    List<Opinion> findByShopId(Long shopId);
-    List<Opinion> findAll();
+    List<Opinion> findByShop(Shop shop);
 }
