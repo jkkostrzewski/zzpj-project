@@ -17,14 +17,13 @@ class ShopFacadeSpec extends Specification {
 
     def 'should correctly update search statistics when executing findAll'() {
         given: 'initialized shopSearch'
-        def shopSearch = anyShopSearch()
-        shopSearchRepository.findByShopId(1) >> Optional.of(shopSearch)
+        shopSearchRepository.findByShopId(1) >> Optional.of(anyShopSearch())
         shopSearchRepository.save(_ as ShopSearch) >> { ShopSearch ss -> ss }
 
         when: 'executing update on given shopSearch'
         shopFacade.updateShopSearchStats(1, anyShopFilterCriteria())
 
-        then: 'shopSearch incrementsValues based on given criteria'
+        then: 'shopSearch increments values and saves to repository'
         1 * shopSearchRepository.save(_ as ShopSearch);
     }
 
