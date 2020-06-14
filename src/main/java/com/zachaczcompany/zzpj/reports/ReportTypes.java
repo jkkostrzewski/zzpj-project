@@ -1,18 +1,26 @@
 package com.zachaczcompany.zzpj.reports;
 
+import lombok.Getter;
+
 public enum ReportTypes {
-    XSLX() {
+    XLSX(".xlsx") {
         @Override
         ReportFileGenerator get() {
-            return new XslxCreator();
+            return new XlsxCreator();
         }
     },
-    PDF() {
+    PDF(".pdf") {
         @Override
-        ReportFileGenerator get() throws Exception {
+        ReportFileGenerator get() {
             return new PdfCreator();
         }
     };
+    @Getter
+    private String extension;
 
-    abstract ReportFileGenerator get() throws Exception;
+    ReportTypes(String extension) {
+        this.extension = extension;
+    }
+
+    abstract ReportFileGenerator get();
 }

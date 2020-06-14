@@ -4,7 +4,9 @@ import java.util.List;
 
 
 public class FilesGenerator {
-    public static byte[] getFileBytes(io.vavr.collection.List<String> columnNames, List<FormOfReport> rows, ReportFileGenerator rfg) throws Exception {
+    public static byte[] getFileBytes(io.vavr.collection.List<String> columnNames,
+                                      List<SearchStatisticRecord> rows,
+                                      ReportFileGenerator rfg) {
         rfg.createHeaderRow(columnNames);
         rows.forEach(row -> {
             rfg

@@ -2,14 +2,13 @@ package com.zachaczcompany.zzpj.reports;
 
 import io.vavr.Tuple2;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 
-public class XslxCreator implements ReportFileGenerator {
+public class XlsxCreator implements ReportFileGenerator {
     private final static int CELL_WIDTH_24_CHARS = 24 * 256;
 
     private final CellStyle stringCellStyle;
@@ -18,26 +17,24 @@ public class XslxCreator implements ReportFileGenerator {
 
     private final Workbook excelWorkbook;
     private final Sheet sheet;
-    private final XSSFFont font;
     private int currentRow;
 
-    public XslxCreator() {
+    public XlsxCreator() {
         excelWorkbook = new XSSFWorkbook();
         sheet = excelWorkbook.createSheet();
         currentRow = 0;
-        font = StylesCreator.defaultFont(excelWorkbook);
         stringCellStyle = StylesCreator.stringCellStyle(excelWorkbook);
         doubleCellStyle = StylesCreator.doubleCellStyle(excelWorkbook);
         integerCellStyle = StylesCreator.integerCellStyle(excelWorkbook);
     }
 
-    public Workbook getStatisticsFile() {
-        return excelWorkbook;
-    }
-
-    public byte[] getReportBytes() throws IOException {
+    public byte[] getReportBytes() {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        this.excelWorkbook.write(stream);
+        try {
+            this.excelWorkbook.write(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
         return stream.toByteArray();
     }
 
@@ -70,11 +67,11 @@ public class XslxCreator implements ReportFileGenerator {
         }
 
         static CellStyle doubleCellStyle(Workbook workbook) {
-            CellStyle salaryCellStyle = workbook.createCellStyle();
-            salaryCellStyle.setDataFormat(workbook.getCreationHelper()
+            CellStyle doubleCellStyle = workbook.createCellStyle();
+            doubleCellStyle.setDataFormat(workbook.getCreationHelper()
                                                   .createDataFormat()
                                                   .getFormat("#,##0.00"));
-            return salaryCellStyle;
+            return doubleCellStyle;
         }
 
         static CellStyle integerCellStyle(Workbook workbook) {
@@ -83,13 +80,6 @@ public class XslxCreator implements ReportFileGenerator {
                                                    .createDataFormat()
                                                    .getFormat("#,##0"));
             return integerCellStyle;
-        }
-
-        static XSSFFont defaultFont(Workbook workbook) {
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName("Calibri");
-            font.setFontHeightInPoints((short) 12);
-            return font;
         }
     }
 
