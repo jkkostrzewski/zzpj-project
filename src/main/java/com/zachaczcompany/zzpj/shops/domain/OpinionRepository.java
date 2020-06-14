@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

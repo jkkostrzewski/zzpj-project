@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-class OpinionDto {
+public class OpinionDto {
     private Long shopId;
     private Integer rate;
     private String description;

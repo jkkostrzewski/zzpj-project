@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import io.vavr.Function3;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 @Setter
 @NoArgsConstructor
-class ShopFilterCriteria {
+public class ShopFilterCriteria {
     private String address;
     private String name;
     private StockType stockType;
@@ -43,7 +43,8 @@ class ShopFilterCriteria {
     }
 
     private Predicate getName(Root<Shop> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-        return cb.equal(root.get(Shop_.name), this.name);
+        var nameLike = getStringLike(name);
+        return cb.like(cb.lower(root.get(Shop_.name)), nameLike);
     }
 
     Specification<Shop> getAddress() {
@@ -51,10 +52,10 @@ class ShopFilterCriteria {
     }
 
     private Predicate addressContainsString(Root<Shop> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        address = getStringLike(address);
+        var addressLike = getStringLike(address);
         Path<Address> add = root.get(Shop_.address);
-        Predicate city = cb.like(cb.lower(add.get(Address_.city)), address);
-        Predicate street = cb.like(cb.lower(add.get(Address_.street)), address);
+        Predicate city = cb.like(cb.lower(add.get(Address_.city)), addressLike);
+        Predicate street = cb.like(cb.lower(add.get(Address_.street)), addressLike);
         return cb.or(city, street);
     }
 
@@ -77,8 +78,8 @@ class ShopFilterCriteria {
         LocalTime time = now.toLocalTime();
 
         Join<OpenHours, DailyOpenHours> openHours = root.join(Shop_.details)
-                                                        .join(ShopDetails_.openHours)
-                                                        .join(OpenHours_.openHours);
+                .join(ShopDetails_.openHours)
+                .join(OpenHours_.openHours);
 
         Predicate dayOfWeek = cb.equal(openHours.get(DailyOpenHours_.dayOfWeek), today);
         Predicate beforeCloseTime = cb.greaterThan(openHours.get(DailyOpenHours_.openTo), time);
