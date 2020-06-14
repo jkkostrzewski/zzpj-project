@@ -3,8 +3,6 @@ package com.zachaczcompany.zzpj.shops;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 class ShopOutputDto {
