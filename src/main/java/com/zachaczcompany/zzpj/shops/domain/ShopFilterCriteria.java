@@ -135,4 +135,32 @@ public class ShopFilterCriteria {
     private Predicate trueOnNull(CriteriaBuilder cb, Object param, Supplier<Predicate> supplier) {
         return Objects.isNull(param) ? cb.isTrue(cb.literal(true)) : supplier.get();
     }
+
+    boolean addressIsNotEmpty() {
+        return address != null;
+    }
+
+    boolean nameIsNotEmpty() {
+        return name != null;
+    }
+
+    boolean stockTypeIsNotEmpty() {
+        return stockType != null;
+    }
+
+    boolean isOpenIsUsed() {
+        return isOpen != null;
+    }
+
+    boolean canEnterIsUsed() {
+        return canEnter != null;
+    }
+
+    boolean maxQueueLengthIsNotEmpty() {
+        return maxQueueLength != null;
+    }
+
+    boolean maxCapacityIsNotEmpty() {
+        return maxCapacity != null;
+    }
 }

@@ -2,6 +2,7 @@ package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
+import org.checkerframework.checker.index.qual.NonNegative;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +32,10 @@ class ShopController {
     @PutMapping("/shops/stats")
     ResponseEntity updateStatistics(@RequestParam @Nonnegative long id, @Valid @RequestBody StatisticsUpdateDto dto) {
         return shopFacade.updateShopStats(id, dto).toResponseEntity();
+    }
+
+    @GetMapping("/shops/search/stats")
+    ResponseEntity getShopStatsById(@RequestParam @Nonnegative long shopId) {
+        return shopFacade.findByShopId(shopId).toResponseEntity();
     }
 }

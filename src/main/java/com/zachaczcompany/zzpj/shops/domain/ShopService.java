@@ -18,10 +18,12 @@ import java.util.function.Function;
 @Service
 class ShopService {
     private final ShopRepository repository;
+    private final ShopSearchRepository shopSearchRepository;  //TODO usunąć razem z clr()
 
     @Autowired
-    public ShopService(ShopRepository repository) {
+    public ShopService(ShopRepository repository, ShopSearchRepository shopSearchRepository) {
         this.repository = repository;
+        this.shopSearchRepository = shopSearchRepository;
     }
 
     @Transactional(rollbackOn = IllegalShopOperation.class)
@@ -39,6 +41,8 @@ class ShopService {
     }
 
     //TODO usunac po dodaniu tworzenia sklepu przy rejestracji kierownika sklepu
+    //TODO dodać tworzenie encji z ShopSearch przy tworzeniu sklepu
+    //TODO usunąć referencje do shopSearchRepository na gorze
     @Bean
     CommandLineRunner clr() {
         return args -> {
@@ -49,6 +53,7 @@ class ShopService {
             var stats = new ShopStats(100, 0, 0);
             var shop1 = new Shop("Shop1", address, details, stats);
             repository.save(shop1);
+            shopSearchRepository.save(new ShopSearch(shop1.getId()));
         };
     }
 }

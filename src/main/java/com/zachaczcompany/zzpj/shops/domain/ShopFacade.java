@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,28 +21,69 @@ import java.util.stream.Collectors;
 public class ShopFacade {
     private final ShopRepository shopRepository;
     private final ShopService shopService;
+    private final ShopSearchRepository shopSearchRepository;
 
     @Autowired
-    public ShopFacade(ShopRepository shopRepository, ShopService shopService) {
+    public ShopFacade(ShopRepository shopRepository, ShopService shopService,
+                      ShopSearchRepository shopSearchRepository) {
         this.shopRepository = shopRepository;
         this.shopService = shopService;
+        this.shopSearchRepository = shopSearchRepository;
     }
 
     public Iterable<ShopOutputDto> findAll(ShopFilterCriteria criteria, Pageable pageable) {
         Specification<Shop> spec = criteria.toSpecification();
         return shopRepository.findAll(spec, pageable).stream()
-                .map(ShopOutputDto::new)
-                .collect(Collectors.toList());
+                             .peek(shop -> updateShopSearchStats(shop.getId(), criteria))
+                             .map(ShopOutputDto::new)
+                             .collect(Collectors.toList());
     }
 
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
         return validateId(id).flatMap(s -> shopService.updateShopStats(s, dto))
-                .fold(Function.identity(), Success::ok);
+                             .fold(Function.identity(), Success::ok);
+    }
+
+    public Response findByShopId(long shopId) {
+        return validateShopSearchId(shopId).fold(Function.identity(), Success::ok);
+    }
+
+    private Either<Error, ShopSearch> validateShopSearchId(long shopId) {
+        return Option.ofOptional(shopSearchRepository.findById(shopId))
+                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
     }
 
     private Either<Error, Shop> validateId(long id) {
         return Option.ofOptional(shopRepository.findById(id))
-                .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+    }
+
+    private void updateShopSearchStats(Long shopId, ShopFilterCriteria criteria) {
+        Optional<ShopSearch> shopSearch = shopSearchRepository.findByShopId(shopId);
+        shopSearch.ifPresent(searchHistory -> {
+            if (criteria.addressIsNotEmpty()) {
+                searchHistory.incrementAddress();
+            }
+            if (criteria.nameIsNotEmpty()) {
+                searchHistory.incrementName();
+            }
+            if (criteria.stockTypeIsNotEmpty()) {
+                searchHistory.incrementStockType();
+            }
+            if (criteria.isOpenIsUsed()) {
+                searchHistory.incrementIsOpen();
+            }
+            if (criteria.canEnterIsUsed()) {
+                searchHistory.incrementCanEnter();
+            }
+            if (criteria.maxQueueLengthIsNotEmpty()) {
+                searchHistory.incrementMaxQueueLength();
+            }
+            if (criteria.maxCapacityIsNotEmpty()) {
+                searchHistory.incrementMaxCapacity();
+            }
+            shopSearchRepository.save(searchHistory);
+        });
     }
 }
