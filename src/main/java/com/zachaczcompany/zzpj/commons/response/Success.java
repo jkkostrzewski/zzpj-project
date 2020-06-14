@@ -1,8 +1,10 @@
 package com.zachaczcompany.zzpj.commons.response;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@Getter
 public class Success<T> extends Response<T> {
     private final T content;
 
