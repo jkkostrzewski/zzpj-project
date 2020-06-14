@@ -4,6 +4,7 @@ import io.vavr.Function3;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -137,11 +138,11 @@ public class ShopFilterCriteria {
     }
 
     boolean addressIsNotEmpty() {
-        return address != null && !address.equals("");
+        return address != null && !StringUtils.isEmpty(address);
     }
 
     boolean nameIsNotEmpty() {
-        return name != null && !name.equals("");
+        return name != null && !StringUtils.isEmpty(address);
     }
 
     boolean stockTypeIsNotEmpty() {
