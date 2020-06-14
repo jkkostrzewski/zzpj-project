@@ -6,7 +6,8 @@ import spock.lang.Specification
 
 class ShopServiceSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
-    ShopService shopService = new ShopService(shopRepository)
+    ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
+    ShopService shopService = new ShopService(shopRepository, shopSearchRepository)
 
     def 'should update shop stats successfully'() {
         given: 'shop and statistics update dto'

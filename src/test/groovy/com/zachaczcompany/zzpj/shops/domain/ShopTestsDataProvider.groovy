@@ -47,7 +47,9 @@ class ShopTestsDataProvider {
     }
 
     static Shop anyShop() {
-        new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        Shop shop =  new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        shop.id = 1
+        return shop
     }
 
     @NamedVariant
@@ -55,5 +57,15 @@ class ShopTestsDataProvider {
         def stats = new ShopStats(maxCapacity, peopleInside, peopleInQueue)
         stats.id = 1
         new Shop("Leadl", anyAddress(), anyShopDetails(), stats)
+    }
+
+    static ShopSearch anyShopSearch() {
+        new ShopSearch(anyShop().getId())
+    }
+
+    static ShopFilterCriteria anyShopFilterCriteria() {
+        def criteria = new ShopFilterCriteria()
+        criteria.setName("Leadl")
+        return criteria
     }
 }
