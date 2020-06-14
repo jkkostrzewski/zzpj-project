@@ -30,6 +30,7 @@ public class UserRegistrationService {
         this.shopFacade = shopFacade;
     }
 
+    //TODO zaimplementować przy okazji https://github.com/jkkostrzewski/zzpj-project/issues/23
     private static Response registerAndAssignToShop(UserSignUp userSignUp) {
         throw new IllegalStateException("NOT IMPLEMENTED YET");
     }
