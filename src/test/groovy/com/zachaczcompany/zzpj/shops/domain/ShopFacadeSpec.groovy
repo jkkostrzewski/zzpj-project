@@ -4,7 +4,6 @@ import com.zachaczcompany.zzpj.commons.response.Error
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
-import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShop
 import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShopSearch
 import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShopFilterCriteria
 
