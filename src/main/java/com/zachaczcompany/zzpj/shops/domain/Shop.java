@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PACKAGE;
 
@@ -31,10 +31,10 @@ public class Shop {
     @Column(nullable = false)
     private Address address;
 
-    @OneToOne(fetch = EAGER, cascade = ALL)
+    @OneToOne(fetch = LAZY, cascade = ALL)
     private ShopDetails details;
 
-    @OneToOne(fetch = EAGER, cascade = ALL)
+    @OneToOne(fetch = LAZY, cascade = ALL)
     private ShopStats shopStats;
 
     Shop(String name, Address address, ShopDetails details, ShopStats shopStats) {

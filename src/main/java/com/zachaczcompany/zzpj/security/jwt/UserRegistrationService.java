@@ -11,8 +11,8 @@ import com.zachaczcompany.zzpj.security.configuration.UserRole;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.domain.Shop;
 import com.zachaczcompany.zzpj.shops.domain.ShopFacade;
+import io.vavr.control.Either;
 import io.vavr.control.Validation;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,31 +30,28 @@ public class UserRegistrationService {
         this.shopFacade = shopFacade;
     }
 
-
-    public Response registerOwner(OwnerSignUpDto ownerSignUpDto) {
-        Validation<Error, ShopCreateDto> validShop = Validation.valid(ownerSignUpDto.getShop());
-        return canRegister(ownerSignUpDto.getCredentials())
-                .combine(validShop)
-                .ap(this::registerAndCreateShop)
-                .fold(Error::concatCodes, Function.identity());
+    private static Response registerAndAssignToShop(UserSignUp userSignUp) {
+        throw new IllegalStateException("NOT IMPLEMENTED YET");
     }
 
-    private Success<UserEntity> registerAndCreateShop(UserSignUp userSignUp, ShopCreateDto shopCreateDto) {
-        var shop = shopFacade.createShop(shopCreateDto);
-        var user = registerUserAccount(userSignUp, UserRole.SHOP_OWNER, shop);
-        return Success.accepted(user);
+    public Response registerOwner(OwnerSignUpDto ownerSignUpDto) {
+        final var shopData = ownerSignUpDto.getShop();
+        return canRegister(ownerSignUpDto.getCredentials())
+                .toEither()
+                .flatMap(credentials -> registerAndCreateShop(credentials, shopData))
+                .fold(Function.identity(), Function.identity());
+    }
+
+    private Either<Error, Success<UserEntity>> registerAndCreateShop(UserSignUp userSignUp, ShopCreateDto shopCreateDto) {
+        return shopFacade.createShop(shopCreateDto)
+                         .map(s -> registerUserAccount(userSignUp, UserRole.SHOP_OWNER, s))
+                         .map(Success::accepted);
     }
 
     @IsOwner
     public Response registerEmployee(UserSignUp userSignUp) {
-        var shop = SecurityContextHolder.getContext().getAuthentication().getCredentials();
-        System.out.println(shop);
         return canRegister(userSignUp)
                 .fold(Function.identity(), UserRegistrationService::registerAndAssignToShop);
-    }
-
-    private static Response registerAndAssignToShop(UserSignUp userSignUp) {
-        return null;
     }
 
     private UserEntity registerUserAccount(UserSignUp userSignUp, UserRole userRole, Shop shop) {
@@ -64,6 +61,7 @@ public class UserRegistrationService {
     }
 
     private Validation<Error, UserSignUp> canRegister(UserSignUp userSignUp) {
-        return userRepository.existsByUsername(userSignUp.getUsername()) ? Validation.valid(userSignUp) : Validation.invalid(Error.badRequest("USERNAME_ALREADY_IN_USE"));
+        return userRepository.existsByUsername(userSignUp.getUsername()) ? Validation.valid(userSignUp) : Validation
+                .invalid(Error.badRequest("USERNAME_ALREADY_IN_USE"));
     }
 }

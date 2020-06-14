@@ -1,7 +1,7 @@
-package com.zachaczcompany.zzpj.shops.domain;
+package com.zachaczcompany.zzpj.shops;
 
-import com.zachaczcompany.zzpj.shops.ShopOutputDto;
-import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
+import com.zachaczcompany.zzpj.shops.domain.ShopFacade;
+import com.zachaczcompany.zzpj.shops.domain.ShopFilterCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

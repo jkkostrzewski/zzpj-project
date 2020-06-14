@@ -78,8 +78,8 @@ public class ShopFilterCriteria {
         LocalTime time = now.toLocalTime();
 
         Join<OpenHours, DailyOpenHours> openHours = root.join(Shop_.details)
-                .join(ShopDetails_.openHours)
-                .join(OpenHours_.openHours);
+                                                        .join(ShopDetails_.openHours)
+                                                        .join(OpenHours_.openHours);
 
         Predicate dayOfWeek = cb.equal(openHours.get(DailyOpenHours_.dayOfWeek), today);
         Predicate beforeCloseTime = cb.greaterThan(openHours.get(DailyOpenHours_.openTo), time);
