@@ -20,6 +20,10 @@ public class ReportsController {
         this.reportsGenerator = reportsGenerator;
     }
 
+    public ResponseEntity<byte[]> getStatisticReport() {
+
+    }
+
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> getPdf() throws IOException, DocumentException {
         System.out.println("elo");

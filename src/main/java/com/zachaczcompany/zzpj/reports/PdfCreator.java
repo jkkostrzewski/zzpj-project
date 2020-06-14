@@ -10,27 +10,22 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-public class PdfCreator {
+
+public class PdfCreator implements ReportFileGenerator {
     private Document document;
     private PdfPTable table;
     private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-    public PdfCreator(io.vavr.collection.List<String> columnNames) throws DocumentException {
+    public PdfCreator() throws DocumentException {
         this.document = new Document();
         PdfWriter.getInstance(document, byteArrayOutputStream);
-        this.table = new PdfPTable(columnNames.length());
         document.open();
-        createHeaderRow(columnNames);
     }
 
-    public byte[] getStatisticsFile() throws DocumentException {
-        document.add(table);
-        document.close();
-        return byteArrayOutputStream.toByteArray();
-    }
-
-    private void createHeaderRow(io.vavr.collection.List<String> columnNames) {
+    public void createHeaderRow(io.vavr.collection.List<String> columnNames) {
+        this.table = new PdfPTable(columnNames.length());
         columnNames
                 .map(Paragraph::new)
                 .map(PdfPCell::new)
@@ -44,6 +39,13 @@ public class PdfCreator {
         return new RowBuilder(table);
     }
 
+    @Override
+    public byte[] getReportBytes() throws IOException, DocumentException {
+        document.add(table);
+        document.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
     private static class StyleCreator {
         static void basicStyle(PdfPCell cell) {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -51,7 +53,7 @@ public class PdfCreator {
         }
     }
 
-    public final class RowBuilder {
+    public static final class RowBuilder implements IRowBuilder {
         private final PdfPTable table;
 
         private RowBuilder(PdfPTable table) {

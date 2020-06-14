@@ -10,17 +10,18 @@ import java.io.IOException;
 
 @Service
 public class ReportsGenerator {
+    ReportFileGenerator reportFileGenerator;
 
 
     public byte[] getReport() throws DocumentException, IOException {
         List<String> of = io.vavr.collection.List.of("Elmpolee", "Conference", "Type");
-        PdfCreator pdfCreator = new PdfCreator(of);
+        PdfCreator pdfCreator = new PdfCreator();
         pdfCreator
                 .addRow()
                 .cell(12)
                 .cell("elo")
                 .cell(12.32);
-        byte[] statisticsFile2 = pdfCreator.getStatisticsFile();
+        byte[] statisticsFile2 = pdfCreator.getReportBytes();
 //        OutputStream os = new FileOutputStream("file.pdf");
 //        os.write(statisticsFile2);
         return statisticsFile2;
@@ -28,13 +29,14 @@ public class ReportsGenerator {
 
     public byte[] getXslx() throws IOException {
         List<String> of = io.vavr.collection.List.of("Elmpolee", "Conference", "Type");
-        SheetCreator sheetCreator = new SheetCreator("name", of);
-        sheetCreator
+        XslxCreator xslxCreator = new XslxCreator();
+        xslxCreator.createHeaderRow(of);
+        xslxCreator
                 .addRow()
                 .cell(12)
                 .cell("elo")
                 .cell(12.32);
-        Workbook workbook = sheetCreator.getStatisticsFile();
+        Workbook workbook = xslxCreator.getStatisticsFile();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         workbook.write(stream);
         return stream.toByteArray();

@@ -5,9 +5,11 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-public class SheetCreator {
 
+public class XslxCreator implements ReportFileGenerator {
     private final static int CELL_WIDTH_24_CHARS = 24 * 256;
 
     private final CellStyle stringCellStyle;
@@ -19,20 +21,24 @@ public class SheetCreator {
     private final XSSFFont font;
     private int currentRow;
 
-    public SheetCreator(String sheetName, io.vavr.collection.List<String> columnNames) {
+    public XslxCreator() {
         excelWorkbook = new XSSFWorkbook();
-        sheet = excelWorkbook.createSheet(sheetName);
+        sheet = excelWorkbook.createSheet();
         currentRow = 0;
         font = StylesCreator.defaultFont(excelWorkbook);
         stringCellStyle = StylesCreator.stringCellStyle(excelWorkbook);
         doubleCellStyle = StylesCreator.doubleCellStyle(excelWorkbook);
         integerCellStyle = StylesCreator.integerCellStyle(excelWorkbook);
-
-        createHeaderRow(columnNames);
     }
 
     public Workbook getStatisticsFile() {
         return excelWorkbook;
+    }
+
+    public byte[] getReportBytes() throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        this.excelWorkbook.write(stream);
+        return stream.toByteArray();
     }
 
     public RowBuilder addRow() {
@@ -41,7 +47,7 @@ public class SheetCreator {
         return new RowBuilder(row);
     }
 
-    private void createHeaderRow(io.vavr.collection.List<String> columnNames) {
+    public void createHeaderRow(io.vavr.collection.List<String> columnNames) {
         Row header = sheet.createRow(0);
         sheet.setColumnWidth(0, CELL_WIDTH_24_CHARS);
 
@@ -87,7 +93,7 @@ public class SheetCreator {
         }
     }
 
-    public final class RowBuilder {
+    public final class RowBuilder implements IRowBuilder {
         private final Row row;
         int currentCell = 0;
 
@@ -109,7 +115,7 @@ public class SheetCreator {
             return this;
         }
 
-        public RowBuilder cell(Double value) {
+        public RowBuilder cell(double value) {
             Cell cell = newCell();
             cell.setCellValue(value);
             cell.setCellStyle(doubleCellStyle);
