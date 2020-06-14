@@ -1,9 +1,11 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
+import com.zachaczcompany.zzpj.commons.ZipCode;
 import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.commons.response.Response;
 import com.zachaczcompany.zzpj.commons.response.Success;
 import com.zachaczcompany.zzpj.security.annotations.CanEditQueue;
+import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import io.vavr.control.Either;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,5 +46,21 @@ public class ShopFacade {
     private Either<Error, Shop> validateId(long id) {
         return Option.ofOptional(shopRepository.findById(id))
                 .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+    }
+
+    public Shop createShop(ShopCreateDto dto) {
+        return new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
+    }
+
+    private static Address getAddress(ShopCreateDto dto){
+        return new Address(dto.getCity(), dto.getStreet(), dto.getBuilding(), dto.getApartment(), new ZipCode(dto.getZipCode()));
+    }
+
+    private static ShopDetails getDetails(ShopCreateDto dto) {
+        return new ShopDetails(dto.getStockType(), dto.getLocalization(), new OpenHours(new HashSet<>(dto.getOpenHours())));
+    }
+
+    private static ShopStats getShopStats(ShopCreateDto dto) {
+        return new ShopStats(dto.getMaxCapacity(), 0, 0);
     }
 }

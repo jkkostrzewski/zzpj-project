@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
-class DailyOpenHours {
+public class DailyOpenHours {
     private DayOfWeek dayOfWeek;
 
     private LocalTime openFrom;
