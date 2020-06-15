@@ -6,4 +6,6 @@ public interface IRowBuilder {
     IRowBuilder cell(double value);
 
     IRowBuilder cell(String value);
+    
+    IRowBuilder cell(long value);
 }

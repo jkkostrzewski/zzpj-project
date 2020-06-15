@@ -1,11 +1,11 @@
 package com.zachaczcompany.zzpj.reports;
 
-import io.vavr.Tuple2;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 
 public class XlsxCreator implements ReportFileGenerator {
@@ -44,19 +44,16 @@ public class XlsxCreator implements ReportFileGenerator {
         return new RowBuilder(row);
     }
 
-    public void createHeaderRow(io.vavr.collection.List<String> columnNames) {
+    public void createHeaderRow(List<String> columnNames) {
         Row header = sheet.createRow(0);
         sheet.setColumnWidth(0, CELL_WIDTH_24_CHARS);
 
-        columnNames.zipWithIndex(Tuple2::new)
-                   .forEach(nameAndCellIndex -> {
-                       var name = nameAndCellIndex._1;
-                       var columnIndex = nameAndCellIndex._2;
-                       sheet.setColumnWidth(columnIndex, CELL_WIDTH_24_CHARS);
-                       var cell = header.createCell(columnIndex);
-                       cell.setCellValue(name);
-                       cell.setCellStyle(stringCellStyle);
-                   });
+        for (int columnIndex = 0; columnIndex < columnNames.size(); columnIndex++) {
+            sheet.setColumnWidth(columnIndex, CELL_WIDTH_24_CHARS);
+            var cell = header.createCell(columnIndex);
+            cell.setCellValue(columnNames.get(columnIndex));
+            cell.setCellStyle(stringCellStyle);
+        }
     }
 
     private static class StylesCreator {
@@ -92,6 +89,13 @@ public class XlsxCreator implements ReportFileGenerator {
         }
 
         public RowBuilder cell(int value) {
+            Cell cell = newCell();
+            cell.setCellValue(value);
+            cell.setCellStyle(integerCellStyle);
+            return this;
+        }
+
+        public RowBuilder cell(long value) {
             Cell cell = newCell();
             cell.setCellValue(value);
             cell.setCellStyle(integerCellStyle);

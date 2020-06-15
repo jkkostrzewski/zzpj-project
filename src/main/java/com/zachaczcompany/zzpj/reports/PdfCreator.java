@@ -7,6 +7,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class PdfCreator implements ReportFileGenerator {
     private Document document;
@@ -24,9 +25,10 @@ public class PdfCreator implements ReportFileGenerator {
         document.open();
     }
 
-    public void createHeaderRow(io.vavr.collection.List<String> columnNames) {
-        this.table = new PdfPTable(columnNames.length());
+    public void createHeaderRow(List<String> columnNames) {
+        this.table = new PdfPTable(columnNames.size());
         columnNames
+                .stream()
                 .map(Paragraph::new)
                 .map(PdfPCell::new)
                 .forEach(e -> {
@@ -89,6 +91,14 @@ public class PdfCreator implements ReportFileGenerator {
         }
 
         public RowBuilder cell(double value) {
+            PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(value)));
+            StyleCreator.basicStyle(cell);
+            setRowStyle(cell);
+            table.addCell(cell);
+            return this;
+        }
+
+        public RowBuilder cell(long value) {
             PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(value)));
             StyleCreator.basicStyle(cell);
             setRowStyle(cell);
