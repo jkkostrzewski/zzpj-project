@@ -27,10 +27,10 @@ class OpinionService {
                      .fold(Function.identity(), Success::ok);
     }
 
-    // TODO: Not typical behavior, returns shop not added opinion
     Response addOpinion(OpinionDto opinion) {
-        return Option.ofOptional(shopFacade.findShopById(opinion.getShopId())).peek(shop -> opinionRepository
-                .save(new Opinion(shop, opinion.getRate(), opinion.getDescription())))
+        return Option.ofOptional(shopFacade.findShopById(opinion.getShopId()))
+                     .map(shop -> new Opinion(shop, opinion.getRate(), opinion.getDescription()))
+                     .map(opinionRepository::save)
                      .toEither(Error.badRequest("OPINION_NOT_ADDED_SHOP_DOES_NOT_EXIST"))
                      .fold(Function.identity(), Success::ok);
     }
