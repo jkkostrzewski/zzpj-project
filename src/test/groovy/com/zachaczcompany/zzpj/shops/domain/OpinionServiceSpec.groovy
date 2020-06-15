@@ -39,7 +39,7 @@ class OpinionServiceSpec extends Specification {
 
     def 'should return empty list when no opinion with such shop'() {
         given: 'initialized shop'
-        shopFacade.findShopById(1) >> Optional.of(anyShop(1))
+        shopFacade.findShopById(1) >> Optional.of(anyShop())
         opinionRepository.findByShop(_ as Shop) >> Collections.emptyList()
 
         when: 'trying to get opinion for shop'
