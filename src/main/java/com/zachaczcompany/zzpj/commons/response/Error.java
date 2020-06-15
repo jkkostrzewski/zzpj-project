@@ -1,9 +1,11 @@
 package com.zachaczcompany.zzpj.commons.response;
 
 import io.vavr.collection.Seq;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@Getter
 public class Error extends Response<String> {
     private final String code;
 

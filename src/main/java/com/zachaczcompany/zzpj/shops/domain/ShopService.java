@@ -18,10 +18,12 @@ import java.util.stream.Collectors;
 @Service
 class ShopService {
     private final ShopRepository repository;
+    private final ShopSearchRepository shopSearchRepository;  //TODO usunąć razem z clr()
 
     @Autowired
-    public ShopService(ShopRepository repository) {
+    public ShopService(ShopRepository repository, ShopSearchRepository shopSearchRepository) {
         this.repository = repository;
+        this.shopSearchRepository = shopSearchRepository;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -69,5 +71,4 @@ class ShopService {
     public Shop createShop(ShopCreateDto dto) {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
         return repository.save(newShop);
-    }
 }

@@ -10,7 +10,8 @@ import java.time.LocalTime
 
 class ShopServiceSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
-    ShopService shopService = new ShopService(shopRepository)
+    ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
+    ShopService shopService = new ShopService(shopRepository, shopSearchRepository)
 
     def 'should get open hours from dto'() {
         given: 'shop create dto'

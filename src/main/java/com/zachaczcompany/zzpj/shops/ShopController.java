@@ -32,4 +32,9 @@ class ShopController {
     ResponseEntity updateStatistics(@RequestParam @Nonnegative long id, @Valid @RequestBody StatisticsUpdateDto dto) {
         return shopFacade.updateShopStats(id, dto).toResponseEntity();
     }
+
+    @GetMapping("/shops/search/stats")
+    ResponseEntity getShopSearchStatsById(@RequestParam @Nonnegative long shopId) {
+        return shopFacade.findByShopId(shopId).toResponseEntity();
+    }
 }
