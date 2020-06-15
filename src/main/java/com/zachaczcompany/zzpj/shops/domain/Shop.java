@@ -1,8 +1,10 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -18,6 +20,8 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Entity
 @Getter
+@ToString
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = PACKAGE)
 public class Shop {
     @Id
@@ -37,7 +41,7 @@ public class Shop {
     @OneToOne(fetch = LAZY, cascade = ALL)
     private ShopStats shopStats;
 
-    Shop(String name, Address address, ShopDetails details, ShopStats shopStats) {
+    public Shop(String name, Address address, ShopDetails details, ShopStats shopStats) {
         this.name = name;
         this.address = address;
         this.details = details;

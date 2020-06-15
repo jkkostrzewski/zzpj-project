@@ -13,7 +13,7 @@ import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.*
 class ShopServiceSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
-    ShopService shopService = new ShopService(shopRepository, shopSearchRepository)
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository)
 
     def 'should get open hours from dto'() {
         given: 'shop create dto'

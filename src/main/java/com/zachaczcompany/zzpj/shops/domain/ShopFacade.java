@@ -39,7 +39,7 @@ public class ShopFacade {
                              .collect(Collectors.toList());
     }
 
-    Optional<Shop> findShopById(Long id) {
+    public Optional<Shop> findShopById(Long id) {
         return shopRepository.findById(id);
     }
 
