@@ -1,6 +1,13 @@
 package com.zachaczcompany.zzpj.shops.domain
 
-import com.zachaczcompany.zzpj.shops.domain.*
+import com.zachaczcompany.zzpj.shops.domain.Address
+import com.zachaczcompany.zzpj.shops.domain.DailyOpenHours
+import com.zachaczcompany.zzpj.shops.domain.Localization
+import com.zachaczcompany.zzpj.shops.domain.OpenHours
+import com.zachaczcompany.zzpj.shops.domain.Shop
+import com.zachaczcompany.zzpj.shops.domain.ShopDetails
+import com.zachaczcompany.zzpj.shops.domain.ShopStats
+import com.zachaczcompany.zzpj.shops.domain.StockType
 import groovy.transform.NamedParam
 import groovy.transform.NamedVariant
 
@@ -40,7 +47,7 @@ class ShopTestsDataProvider {
     }
 
     static Shop anyShop() {
-        Shop shop = new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        Shop shop =new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
         shop.id = 1
         return shop
     }

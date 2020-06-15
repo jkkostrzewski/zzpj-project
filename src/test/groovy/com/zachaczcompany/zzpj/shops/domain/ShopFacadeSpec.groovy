@@ -31,7 +31,7 @@ class ShopFacadeSpec extends Specification {
         shopSearchRepository.findById(_ as Long) >> Optional.empty()
 
         when: 'trying to find ShopSearch for a shop that does not exist'
-        def response = shopFacade.findByShopId((long) 1) as Error
+        def response = shopFacade.findByShopId((long)1) as Error
 
         then:
         response.getCode() == 'SHOP_DOES_NOT_EXIST'
