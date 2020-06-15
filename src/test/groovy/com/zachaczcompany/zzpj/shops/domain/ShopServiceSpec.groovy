@@ -122,7 +122,7 @@ class ShopServiceSpec extends Specification {
 
     def 'should update shop stats successfully'() {
         given: 'shop and statistics update dto'
-        def shop = shopWithStats(maxCapacity: 20, peopleInside: 10, peopleInQueue: 0)
+        def shop = shopWithStats(20, 10, 0)
         def dto = new StatisticsUpdateDto(joinedToQueue, wentInside, leftQueue, leftInside)
         shopRepository.save(_ as Shop) >> { Shop s -> s }
 
@@ -146,7 +146,7 @@ class ShopServiceSpec extends Specification {
 
     def 'should not update shop stats and return error'() {
         given: 'shop and statistics update dto'
-        def shop = shopWithStats(maxCapacity: 20, peopleInside: 10, peopleInQueue: 0)
+        def shop = shopWithStats(20, 10, 0)
         def dto = new StatisticsUpdateDto(joinedToQueue, wentInside, leftQueue, leftInside)
         shopRepository.save(_ as Shop) >> { Shop s -> s }
 
