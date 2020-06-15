@@ -2,6 +2,7 @@ package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import java.util.stream.Collectors;
 @Component
 class ShopValidator {
     private final ShopRepository repository;
+    private final ShopSearchRepository searchRepository;
 
     @Autowired
-    ShopValidator(ShopRepository repository) {
+    ShopValidator(ShopRepository repository, ShopSearchRepository searchRepository) {
         this.repository = repository;
+        this.searchRepository = searchRepository;
     }
 
     Validation<Error, ShopCreateDto> canCreateShop(ShopCreateDto dto) {
@@ -49,5 +52,10 @@ class ShopValidator {
     Validation<Error, Shop> shopExists(long id) {
         return Option.ofOptional(repository.findById(id))
                      .toValidation(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+    }
+
+    Either<Error, ShopSearch> searchExists(long shopId) {
+        return Option.ofOptional(searchRepository.findById(shopId))
+                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
     }
 }

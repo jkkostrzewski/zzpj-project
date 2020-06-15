@@ -12,18 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 class ShopService {
     private final ShopRepository repository;
-    private final ShopSearchRepository shopSearchRepository;  //TODO usunąć razem z clr()
+    private final ShopSearchRepository searchRepository;
 
     @Autowired
     public ShopService(ShopRepository repository, ShopSearchRepository shopSearchRepository) {
         this.repository = repository;
-        this.shopSearchRepository = shopSearchRepository;
+        this.searchRepository = shopSearchRepository;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -70,5 +71,21 @@ class ShopService {
 
     public Shop createShop(ShopCreateDto dto) {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
-        return repository.save(newShop);
+        var saved = repository.save(newShop);
+        createSearch(saved);
+        return saved;
+    }
+
+    private ShopSearch createSearch(Shop shop) {
+        var search = new ShopSearch(shop.getId());
+        return searchRepository.save(search);
+    }
+
+    void updateShopSearchStats(Long shopId, ShopFilterCriteria criteria) {
+        Optional<ShopSearch> shopSearch = searchRepository.findByShopId(shopId);
+        shopSearch.ifPresent(searchHistory -> {
+            searchHistory.incrementValues(criteria);
+            searchRepository.save(searchHistory);
+        });
+    }
 }

@@ -34,7 +34,7 @@ class ShopController {
     }
 
     @GetMapping("/shops/search/stats")
-    ResponseEntity getShopSearchStatsById(@RequestParam @Nonnegative long shopId) {
-        return shopFacade.findByShopId(shopId).toResponseEntity();
+    ResponseEntity getShopSearchStatsById(@RequestParam @Nonnegative long searchId) {
+        return shopFacade.findByShopSearchId(searchId).toResponseEntity();
     }
 }

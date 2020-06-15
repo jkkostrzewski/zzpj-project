@@ -21,22 +21,20 @@ import java.util.stream.Collectors;
 public class ShopFacade {
     private final ShopRepository shopRepository;
     private final ShopValidator validator;
-    private final ShopService shopService;
-    private final ShopSearchRepository shopSearchRepository;
+    private final ShopService service;
 
     @Autowired
     public ShopFacade(ShopRepository shopRepository, ShopService shopService,
-                ShopValidator validator, ShopSearchRepository shopSearchRepository) {
+                      ShopValidator validator) {
         this.shopRepository = shopRepository;
         this.validator = validator;
-        this.shopService = shopService;
-        this.shopSearchRepository = shopSearchRepository;
+        this.service = shopService;
     }
 
     public Iterable<ShopOutputDto> findAll(ShopFilterCriteria criteria, Pageable pageable) {
         Specification<Shop> spec = criteria.toSpecification();
         return shopRepository.findAll(spec, pageable).stream()
-                             .peek(shop -> updateShopSearchStats(shop.getId(), criteria))
+                             .peek(shop -> service.updateShopSearchStats(shop.getId(), criteria))
                              .map(ShopOutputDto::new)
                              .collect(Collectors.toList());
     }
@@ -48,35 +46,17 @@ public class ShopFacade {
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
         return validator.shopExists(id)
-                        .fold(Function.identity(), s -> Success.ok(shopService.updateShopStats(s, dto)));
-        return validateId(id).flatMap(s -> shopService.updateShopStats(s, dto))
-                             .fold(Function.identity(), Success::ok);
+                        .fold(Function.identity(), s -> Success.ok(service.updateShopStats(s, dto)));
     }
 
     public Either<Error, Shop> createShop(ShopCreateDto dto) {
         return validator.canCreateShop(dto)
                         .toEither()
-                        .map(shopService::createShop);
-
-    public Response findByShopId(long shopId) {
-        return validateShopSearchId(shopId).fold(Function.identity(), Success::ok);
+                        .map(service::createShop);
     }
 
-    private Either<Error, ShopSearch> validateShopSearchId(long shopId) {
-        return Option.ofOptional(shopSearchRepository.findById(shopId))
-                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
-    }
-
-    private Either<Error, Shop> validateId(long id) {
-        return Option.ofOptional(shopRepository.findById(id))
-                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
-    }
-
-    private void updateShopSearchStats(Long shopId, ShopFilterCriteria criteria) {
-        Optional<ShopSearch> shopSearch = shopSearchRepository.findByShopId(shopId);
-        shopSearch.ifPresent(searchHistory -> {
-            searchHistory.incrementValues(criteria);
-            shopSearchRepository.save(searchHistory);
-        });
+    public Response findByShopSearchId(long searchId) {
+        return validator.searchExists(searchId).
+                fold(Function.identity(), Success::ok);
     }
 }

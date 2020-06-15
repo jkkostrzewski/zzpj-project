@@ -41,7 +41,7 @@ class ShopTestsDataProvider {
     }
 
     static Shop anyShop() {
-        Shop shop =  new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        Shop shop = new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
         shop.id = 1
         return shop
     }

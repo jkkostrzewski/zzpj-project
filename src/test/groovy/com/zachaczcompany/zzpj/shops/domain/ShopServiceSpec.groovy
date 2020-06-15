@@ -8,6 +8,8 @@ import spock.lang.Specification
 import java.time.DayOfWeek
 import java.time.LocalTime
 
+import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.*
+
 class ShopServiceSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
@@ -17,8 +19,8 @@ class ShopServiceSpec extends Specification {
         given: 'shop create dto'
         def openFrom = LocalTime.of(7, 30)
         def openTo = LocalTime.of(21, 00)
-        def openHours = ShopTestsDataProvider.dtoOpenHoursAlways(openFrom, openTo)
-        def dto = ShopTestsDataProvider.shopCreateDtoWithOpenHours(openHours)
+        def openHours = dtoOpenHoursAlways(openFrom, openTo)
+        def dto = shopCreateDtoWithOpenHours(openHours)
 
         when: 'service is converting dto to OpenHours entity'
         def openHoursEntity = shopService.getOpenHours(dto)
@@ -34,7 +36,7 @@ class ShopServiceSpec extends Specification {
     def 'should get open shop stats from dto'() {
         given: 'shop create dto'
         def maxCapacity = 150
-        def dto = ShopTestsDataProvider.shopCreateDtoWithMaxCapacity(maxCapacity)
+        def dto = shopCreateDtoWithMaxCapacity(maxCapacity)
 
         when: 'service is retrieving shop stats from dto'
         def stats = shopService.getShopStats(dto)
@@ -69,7 +71,7 @@ class ShopServiceSpec extends Specification {
         def building = 123
         def apartment = '14a'
         def zipCode = '12-345'
-        def dto = ShopTestsDataProvider.shopCreateDtoWithAddress(name, city, street, building, apartment, zipCode)
+        def dto = shopCreateDtoWithAddress(name, city, street, building, apartment, zipCode)
 
         when: 'service is retrieving address from dto'
         def address = shopService.getAddress(dto)
@@ -84,7 +86,7 @@ class ShopServiceSpec extends Specification {
 
     def 'should create shop from dto'() {
         given: 'shop create dto'
-        def dto = ShopTestsDataProvider.shopCreateDtoWithMaxCapacity(100)
+        def dto = shopCreateDtoWithMaxCapacity(100)
         shopRepository.save(_ as Shop) >> { Shop shop -> shop }
 
         when: 'service is trying to create shop'
@@ -120,7 +122,7 @@ class ShopServiceSpec extends Specification {
 
     def 'should update shop stats successfully'() {
         given: 'shop and statistics update dto'
-        def shop = ShopTestsDataProvider.shopWithStats maxCapacity: 20, peopleInside: 10, peopleInQueue: 0
+        def shop = shopWithStats(maxCapacity: 20, peopleInside: 10, peopleInQueue: 0)
         def dto = new StatisticsUpdateDto(joinedToQueue, wentInside, leftQueue, leftInside)
         shopRepository.save(_ as Shop) >> { Shop s -> s }
 
@@ -144,7 +146,7 @@ class ShopServiceSpec extends Specification {
 
     def 'should not update shop stats and return error'() {
         given: 'shop and statistics update dto'
-        def shop = ShopTestsDataProvider.shopWithStats maxCapacity: 20, peopleInside: 10, peopleInQueue: 0
+        def shop = shopWithStats(maxCapacity: 20, peopleInside: 10, peopleInQueue: 0)
         def dto = new StatisticsUpdateDto(joinedToQueue, wentInside, leftQueue, leftInside)
         shopRepository.save(_ as Shop) >> { Shop s -> s }
 
@@ -165,5 +167,17 @@ class ShopServiceSpec extends Specification {
         5             | 15         | 0         | 5
         5             | 15         | 0         | 0
         20            | 20         | 0         | 5
+    }
+
+    def 'should correctly update search statistics when executing findAll'() {
+        given: 'initialized shopSearch'
+        shopSearchRepository.findByShopId(1) >> Optional.of(anyShopSearch())
+        shopSearchRepository.save(_ as ShopSearch) >> { ShopSearch ss -> ss }
+
+        when: 'executing update on given shopSearch'
+        shopService.updateShopSearchStats(1, anyShopFilterCriteria())
+
+        then: 'shopSearch increments values and saves to repository'
+        1 * shopSearchRepository.save(_ as ShopSearch)
     }
 }
