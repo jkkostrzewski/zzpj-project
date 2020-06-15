@@ -4,14 +4,13 @@ import com.zachaczcompany.zzpj.commons.response.Error
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
-import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShopFilterCriteria
 import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShopSearch
+import static com.zachaczcompany.zzpj.shops.domain.ShopTestsDataProvider.anyShopFilterCriteria
 
 class ShopFacadeSpec extends Specification {
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
     ShopRepository shopRepository = Mock(ShopRepository)
-    ShopService shopService = new ShopService(shopRepository, shopSearchRepository)
-    //TODO searchRepository will be deleted from this class
+    ShopService shopService = new ShopService(shopRepository, shopSearchRepository) //TODO searchRepository will be deleted from this class
     ShopFacade shopFacade = new ShopFacade(shopRepository, shopService, shopSearchRepository)
 
 

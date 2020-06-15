@@ -36,8 +36,8 @@ class ShopService {
         var saveAndMap = save.andThen(mapToDto);
 
         return Try.of(() -> shop.updatePeople(deltaInside, deltaQueue))
-                  .toEither(Error.badRequest("CANNOT_UPDATE_STATS"))
-                  .map(saveAndMap);
+                .toEither(Error.badRequest("CANNOT_UPDATE_STATS"))
+                .map(saveAndMap);
     }
 
     //TODO usunac po dodaniu tworzenia sklepu przy rejestracji kierownika sklepu

@@ -27,9 +27,9 @@ public class UserRegistrationService {
 
 
     /*FIXME wywalic transctional po dodaniu rejestracji z tworzeniu sklepu
-     * teraz jak iterator.next() wywali npe, to uzytkownik nie powinien zostac zarejestrowany
-     * czyli nie bedzie ownera bez sklepu. mam nadzieje
-     */
+    * teraz jak iterator.next() wywali npe, to uzytkownik nie powinien zostac zarejestrowany
+    * czyli nie bedzie ownera bez sklepu. mam nadzieje
+    */
     @Transactional
     public void registerOwner(UserSignUp userSignUp) throws UserAlreadyExistsException {
         registerUserAccount(userSignUp, SHOP_OWNER);
@@ -45,8 +45,7 @@ public class UserRegistrationService {
         }
 
         String encodePassword = passwordEncoder.encode(userSignUp.getPassword());
-        UserEntity userEntity = new UserEntity(userSignUp.getUsername(), encodePassword, userRole, shopRepository
-                .findAll().iterator().next());
+        UserEntity userEntity = new UserEntity(userSignUp.getUsername(), encodePassword, userRole, shopRepository.findAll().iterator().next());
         userRepository.save(userEntity);
     }
 }
