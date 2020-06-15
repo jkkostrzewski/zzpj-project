@@ -4,6 +4,7 @@ import io.vavr.Function3;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -134,5 +135,33 @@ public class ShopFilterCriteria {
 
     private Predicate trueOnNull(CriteriaBuilder cb, Object param, Supplier<Predicate> supplier) {
         return Objects.isNull(param) ? cb.isTrue(cb.literal(true)) : supplier.get();
+    }
+
+    boolean addressIsNotEmpty() {
+        return address != null && !StringUtils.isEmpty(address);
+    }
+
+    boolean nameIsNotEmpty() {
+        return name != null && !StringUtils.isEmpty(address);
+    }
+
+    boolean stockTypeIsNotEmpty() {
+        return stockType != null;
+    }
+
+    boolean isOpenIsUsed() {
+        return isOpen != null;
+    }
+
+    boolean canEnterIsUsed() {
+        return canEnter != null;
+    }
+
+    boolean maxQueueLengthIsNotEmpty() {
+        return maxQueueLength != null;
+    }
+
+    boolean maxCapacityIsNotEmpty() {
+        return maxCapacity != null;
     }
 }
