@@ -2,6 +2,7 @@ package com.zachaczcompany.zzpj.security.auth.database;
 
 import com.zachaczcompany.zzpj.security.auth.User;
 import com.zachaczcompany.zzpj.security.configuration.UserRole;
+import com.zachaczcompany.zzpj.shops.domain.Shop;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +22,8 @@ public class UserEntity {
     private Long id;
     private String username;
     private String password;
+    @OneToOne
+    private Shop shop;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> permissions;
     private boolean isAccountNonExpired;
@@ -28,10 +31,11 @@ public class UserEntity {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public UserEntity(String username, String password, UserRole userRole) {
+    public UserEntity(String username, String password, UserRole userRole, Shop shop) {
         this.username = username;
         this.password = password;
         this.permissions = getPermissions(userRole.getGrantedAuthority());
+        this.shop = shop;
         this.isAccountNonExpired = true;
         this.isAccountNonLock = true;
         this.isCredentialsNonExpired = true;

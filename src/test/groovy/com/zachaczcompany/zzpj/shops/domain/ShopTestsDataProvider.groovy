@@ -1,13 +1,8 @@
-package com.zachaczcompany.zzpj.shops
+package com.zachaczcompany.zzpj.shops.domain
 
-import com.zachaczcompany.zzpj.shops.Address
-import com.zachaczcompany.zzpj.shops.DailyOpenHours
-import com.zachaczcompany.zzpj.shops.Localization
-import com.zachaczcompany.zzpj.shops.OpenHours
-import com.zachaczcompany.zzpj.shops.Shop
-import com.zachaczcompany.zzpj.shops.ShopDetails
-import com.zachaczcompany.zzpj.shops.ShopStats
-import com.zachaczcompany.zzpj.shops.StockType
+import com.zachaczcompany.zzpj.shops.domain.*
+import groovy.transform.NamedParam
+import groovy.transform.NamedVariant
 
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -45,6 +40,25 @@ class ShopTestsDataProvider {
     }
 
     static Shop anyShop() {
-        new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        Shop shop = new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        shop.id = 1
+        return shop
+    }
+
+    @NamedVariant
+    static Shop shopWithStats(@NamedParam int maxCapacity, @NamedParam int peopleInside, @NamedParam int peopleInQueue) {
+        def stats = new ShopStats(maxCapacity, peopleInside, peopleInQueue)
+        stats.id = 1
+        new Shop("Leadl", anyAddress(), anyShopDetails(), stats)
+    }
+
+    static ShopSearch anyShopSearch() {
+        new ShopSearch(anyShop().getId())
+    }
+
+    static ShopFilterCriteria anyShopFilterCriteria() {
+        def criteria = new ShopFilterCriteria()
+        criteria.setName("Leadl")
+        return criteria
     }
 }

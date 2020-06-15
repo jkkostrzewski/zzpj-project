@@ -1,16 +1,12 @@
-package com.zachaczcompany.zzpj.shops;
+package com.zachaczcompany.zzpj.shops.domain;
 
 import io.vavr.Function3;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,7 +15,7 @@ import java.util.function.Supplier;
 
 @Setter
 @NoArgsConstructor
-class ShopFilterCriteria {
+public class ShopFilterCriteria {
     private String address;
     private String name;
     private StockType stockType;
@@ -43,7 +39,8 @@ class ShopFilterCriteria {
     }
 
     private Predicate getName(Root<Shop> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-        return cb.equal(root.get(Shop_.name), this.name);
+        var nameLike = getStringLike(name);
+        return cb.like(cb.lower(root.get(Shop_.name)), nameLike);
     }
 
     Specification<Shop> getAddress() {
@@ -51,10 +48,10 @@ class ShopFilterCriteria {
     }
 
     private Predicate addressContainsString(Root<Shop> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        address = getStringLike(address);
+        var addressLike = getStringLike(address);
         Path<Address> add = root.get(Shop_.address);
-        Predicate city = cb.like(cb.lower(add.get(Address_.city)), address);
-        Predicate street = cb.like(cb.lower(add.get(Address_.street)), address);
+        Predicate city = cb.like(cb.lower(add.get(Address_.city)), addressLike);
+        Predicate street = cb.like(cb.lower(add.get(Address_.street)), addressLike);
         return cb.or(city, street);
     }
 
@@ -133,5 +130,33 @@ class ShopFilterCriteria {
 
     private Predicate trueOnNull(CriteriaBuilder cb, Object param, Supplier<Predicate> supplier) {
         return Objects.isNull(param) ? cb.isTrue(cb.literal(true)) : supplier.get();
+    }
+
+    boolean addressIsNotEmpty() {
+        return address != null && !StringUtils.isEmpty(address);
+    }
+
+    boolean nameIsNotEmpty() {
+        return name != null && !StringUtils.isEmpty(address);
+    }
+
+    boolean stockTypeIsNotEmpty() {
+        return stockType != null;
+    }
+
+    boolean isOpenIsUsed() {
+        return isOpen != null;
+    }
+
+    boolean canEnterIsUsed() {
+        return canEnter != null;
+    }
+
+    boolean maxQueueLengthIsNotEmpty() {
+        return maxQueueLength != null;
+    }
+
+    boolean maxCapacityIsNotEmpty() {
+        return maxCapacity != null;
     }
 }
