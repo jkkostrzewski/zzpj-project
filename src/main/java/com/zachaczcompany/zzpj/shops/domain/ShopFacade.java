@@ -43,10 +43,6 @@ public class ShopFacade {
         return shopRepository.findById(id);
     }
 
-    Optional<Shop> findShopById(Long id) {
-        return shopRepository.findById(id);
-    }
-
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
         return validateId(id).flatMap(s -> shopService.updateShopStats(s, dto))
