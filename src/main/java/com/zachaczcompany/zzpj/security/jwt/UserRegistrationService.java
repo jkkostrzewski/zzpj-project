@@ -40,13 +40,13 @@ public class UserRegistrationService {
         return canRegister(ownerSignUpDto.getCredentials())
                 .toEither()
                 .flatMap(credentials -> registerAndCreateShop(credentials, shopData))
-                .fold(Function.identity(), Function.identity());
+                .fold(Function.identity(), Success::accepted);
     }
 
-    private Either<Error, Success<UserEntity>> registerAndCreateShop(UserSignUp userSignUp, ShopCreateDto shopCreateDto) {
+    private Either<Error, UserCreatedDTO> registerAndCreateShop(UserSignUp userSignUp, ShopCreateDto shopCreateDto) {
         return shopFacade.createShop(shopCreateDto)
                          .map(s -> registerUserAccount(userSignUp, UserRole.SHOP_OWNER, s))
-                         .map(Success::accepted);
+                         .map(UserCreatedDTO::new);
     }
 
     @IsOwner
@@ -62,7 +62,7 @@ public class UserRegistrationService {
     }
 
     private Validation<Error, UserSignUp> canRegister(UserSignUp userSignUp) {
-        return userRepository.existsByUsername(userSignUp.getUsername()) ? Validation.valid(userSignUp) : Validation
+        return !userRepository.existsByUsername(userSignUp.getUsername()) ? Validation.valid(userSignUp) : Validation
                 .invalid(Error.badRequest("USERNAME_ALREADY_IN_USE"));
     }
 }
