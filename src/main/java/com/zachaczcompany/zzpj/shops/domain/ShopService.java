@@ -57,8 +57,8 @@ class ShopService {
 
     @Transactional(rollbackOn = IllegalShopOperation.class)
     public Either<Error, ShopStatsDto> updateShopStats(Shop shop, StatisticsUpdateDto dto) {
-        var deltaInside = dto.getPeopleWentInside() - dto.getPeopleLeftInside();
-        var deltaQueue = dto.getPeopleJoinedQueue() - dto.getPeopleLeftQueue() - dto.getPeopleWentInside();
+        var deltaInside = dto.getPeopleEnteredShop() - dto.getPeopleLeftShop();
+        var deltaQueue = dto.getPeopleJoinedQueue() - dto.getPeopleLeftQueue() - dto.getPeopleEnteredShop();
 
         Function<Shop, Shop> save = repository::save;
         Function<Shop, ShopStatsDto> mapToDto = s -> new ShopStatsDto(s.getShopStats());

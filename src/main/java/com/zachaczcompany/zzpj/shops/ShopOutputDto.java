@@ -3,6 +3,7 @@ package com.zachaczcompany.zzpj.shops;
 import com.zachaczcompany.zzpj.shops.domain.Address;
 import com.zachaczcompany.zzpj.shops.domain.Localization;
 import com.zachaczcompany.zzpj.shops.domain.Shop;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
