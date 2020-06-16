@@ -9,7 +9,10 @@ import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
+import io.vavr.Tuple;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
+import io.vavr.control.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -64,7 +67,9 @@ public class ShopFacade {
 
     @CanEditShop
     public Response updateShopDetails(long id, ShopUpdateDto dto) {
-        return validator.shopExists(id)
-                        .fold(Function.identity(), s -> Success.ok(service.updateShopDetails(s, dto)));
+        return validator.canUpdateShop(dto)
+                        .combine(validator.shopExists(id))
+                        .ap(Tuple::of)
+                        .fold(Error::concatCodes, tuple -> Success.ok(service.updateShopDetails(tuple._2, dto)));
     }
 }
