@@ -4,8 +4,10 @@ import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.commons.response.Response;
 import com.zachaczcompany.zzpj.commons.response.Success;
 import com.zachaczcompany.zzpj.security.annotations.CanEditQueue;
+import com.zachaczcompany.zzpj.security.annotations.CanEditShop;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import io.vavr.control.Either;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +60,11 @@ public class ShopFacade {
     public Response findByShopSearchId(long searchId) {
         return validator.searchExists(searchId).
                 fold(Function.identity(), Success::ok);
+    }
+
+    @CanEditShop
+    public Response updateShopDetails(long id, ShopUpdateDto dto) {
+        return validator.shopExists(id)
+                        .fold(Function.identity(), s -> Success.ok(service.updateShopDetails(s, dto)));
     }
 }

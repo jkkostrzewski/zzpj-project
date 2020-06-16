@@ -1,6 +1,7 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Arrays;
 import java.util.Set;
 
 import static javax.persistence.EnumType.STRING;
@@ -42,5 +44,14 @@ class ShopDetails {
 
     Set<DailyOpenHours> getOpenHours() {
         return openHours.getOpenHours();
+    }
+
+    void updateDetails(StockType newStockType, OpenHours newOpenHours) {
+        if(newStockType != null) {
+            stockType = newStockType;
+        }
+        if (newOpenHours != null) {
+            openHours = newOpenHours;
+        }
     }
 }
