@@ -3,10 +3,12 @@ package com.zachaczcompany.zzpj.shops.domain;
 import com.zachaczcompany.zzpj.commons.ZipCode;
 import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.history.shopStats.ShopStatsChangedEvent;
+import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
+import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,14 @@ class ShopService {
     private final ApplicationEventPublisher eventPublisher;
     private final ShopSearchRepository searchRepository;
     private final ShopRepository repository;
+    private final LocationRestService locationRestService;
 
     @Autowired
-    ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository, ShopSearchRepository shopSearchRepository) {
+    ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository, ShopSearchRepository shopSearchRepository, LocationRestService locationRestService) {
         this.eventPublisher = eventPublisher;
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
+        this.locationRestService = locationRestService;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -36,8 +40,10 @@ class ShopService {
                 .getZipCode()));
     }
 
-    private static ShopDetails getDetails(ShopCreateDto dto) {
-        return new ShopDetails(dto.getStockType(), dto.getLocalization(), getOpenHours(dto));
+    private ShopDetails getDetails(ShopCreateDto dto) throws LocationNotFoundException {
+        LocalizationStrategy strategy = dto
+                .hasLocalization() ? new LocalizationDefaultStrategy() : new LocalizationApiStrategy(locationRestService);
+        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
     }
 
     private static OpenHours getOpenHours(ShopCreateDto dto) {
@@ -79,7 +85,7 @@ class ShopService {
         eventPublisher.publishEvent(event);
     }
 
-    Shop createShop(ShopCreateDto dto) {
+    public Shop createShop(ShopCreateDto dto) throws LocationNotFoundException {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
         var saved = repository.save(newShop);
         publishShopStatsChangedEvent(newShop);
