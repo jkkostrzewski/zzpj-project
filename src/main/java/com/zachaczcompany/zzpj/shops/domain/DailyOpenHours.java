@@ -17,7 +17,8 @@ import static lombok.AccessLevel.PACKAGE;
 @Getter
 @NoArgsConstructor(access = PACKAGE)
 @AllArgsConstructor
-class DailyOpenHours {
+@ValidOpenHours
+public class DailyOpenHours {
     private DayOfWeek dayOfWeek;
 
     private LocalTime openFrom;
@@ -25,6 +26,8 @@ class DailyOpenHours {
     private LocalTime openTo;
 
     static Set<DailyOpenHours> always(LocalTime openFrom, LocalTime openTo) {
-        return Stream.of(DayOfWeek.values()).map(day -> new DailyOpenHours(day, openFrom, openTo)).collect(Collectors.toSet());
+        return Stream.of(DayOfWeek.values())
+                     .map(day -> new DailyOpenHours(day, openFrom, openTo))
+                     .collect(Collectors.toSet());
     }
 }
