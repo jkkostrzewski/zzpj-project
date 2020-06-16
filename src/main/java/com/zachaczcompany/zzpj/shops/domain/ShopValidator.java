@@ -2,6 +2,8 @@ package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Validation;
@@ -25,24 +27,29 @@ class ShopValidator {
     }
 
     Validation<Error, ShopCreateDto> canCreateShop(ShopCreateDto dto) {
-        return openHoursValid(dto) ? Validation.valid(dto) : Validation.invalid(Error.badRequest("INVALID_OPEN_HOURS"));
+        return openHoursValid(dto.getOpenHours()) ?
+                Validation.valid(dto) : Validation.invalid(Error.badRequest("INVALID_OPEN_HOURS"));
     }
 
-    private boolean openHoursValid(ShopCreateDto dto) {
-        return coversWholeWeek(dto) && opensBeforeCloses(dto);
+    Validation<Error, ShopUpdateDto> canUpdateShop(ShopUpdateDto dto) {
+        return openHoursValid(dto.getOpenHours()) ?
+                Validation.valid(dto) : Validation.invalid(Error.badRequest("INVALID_OPEN_HOURS"));
     }
 
-    private boolean coversWholeWeek(ShopCreateDto dto) {
-        List<DayOfWeek> daysCovered = dto.getOpenHours()
-                                         .stream()
+    private boolean openHoursValid(List<ShopCreateDto.OpenHours> openHours) {
+        return coversWholeWeek(openHours) && opensBeforeCloses(openHours);
+    }
+
+    private boolean coversWholeWeek(List<ShopCreateDto.OpenHours> openHours) {
+        List<DayOfWeek> daysCovered = openHours.stream()
                                          .map(ShopCreateDto.OpenHours::getDayOfWeek)
                                          .collect(Collectors.toList());
 
         return daysCovered.size() == 7 && daysCovered.containsAll(Arrays.asList(DayOfWeek.values()));
     }
 
-    private boolean opensBeforeCloses(ShopCreateDto dto) {
-        return dto.getOpenHours().stream().allMatch(this::opensBeforeCloses);
+    private boolean opensBeforeCloses(List<ShopCreateDto.OpenHours> openHours) {
+        return openHours.stream().allMatch(this::opensBeforeCloses);
     }
 
     private boolean opensBeforeCloses(ShopCreateDto.OpenHours openHours) {

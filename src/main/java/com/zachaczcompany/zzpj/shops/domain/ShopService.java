@@ -8,6 +8,7 @@ import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.ShopWithDistanceOutputDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import com.zachaczcompany.zzpj.shops.distance.DistanceCalculator;
 import com.zachaczcompany.zzpj.shops.distance.LocationApiDistance;
@@ -29,6 +30,7 @@ import javax.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -68,9 +70,8 @@ class ShopService {
         return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
     }
 
-    private static OpenHours getOpenHours(ShopCreateDto dto) {
-        var daily = dto.getOpenHours()
-                       .stream()
+    private static OpenHours getOpenHours(List<ShopCreateDto.OpenHours> openHours) {
+        var daily = openHours.stream()
                        .map(ShopService::getDailyOpenHours)
                        .collect(Collectors.toSet());
         return new OpenHours(daily);
@@ -105,6 +106,15 @@ class ShopService {
     private void publishShopStatsChangedEvent(Shop shop) {
         var event = new ShopStatsChangedEvent(shop);
         eventPublisher.publishEvent(event);
+    }
+
+
+    public Shop updateShopDetails(Shop shop, ShopUpdateDto dto) {
+        List<ShopCreateDto.OpenHours> dtoOpenHours = dto.getOpenHours();
+        OpenHours newOpenHours = dtoOpenHours != null ? getOpenHours(dtoOpenHours) : null;
+
+        shop.updateShopNameAndDetails(dto.getName(), dto.getStockType(), newOpenHours);
+        return repository.save(shop);
     }
 
     Shop createShop(ShopCreateDto dto) throws LocationNotFoundException {

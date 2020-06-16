@@ -2,6 +2,8 @@ package com.zachaczcompany.zzpj.shops.domain
 
 import com.zachaczcompany.zzpj.commons.ZipCode
 import com.zachaczcompany.zzpj.shops.ShopCreateDto
+import com.zachaczcompany.zzpj.shops.ShopOutputDto
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto
 import groovy.transform.NamedParam
 import groovy.transform.NamedVariant
 
@@ -120,5 +122,13 @@ class ShopTestsDataProvider {
         def criteria = new ShopFilterCriteria()
         criteria.setName("Leadl")
         return criteria
+    }
+
+    static ShopUpdateDto anyShopUpdateDto() {
+        new ShopUpdateDto("NewName", StockType.ELECTRONIC, dtoOpenHoursAlways(LocalTime.of(12, 0), LocalTime.of(16, 0)))
+    }
+
+    static ShopUpdateDto shopUpdateDto(String name, StockType type, List<ShopCreateDto.OpenHours> openHours) {
+        new ShopUpdateDto(name, type, openHours)
     }
 }

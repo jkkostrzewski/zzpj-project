@@ -4,9 +4,12 @@ import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.commons.response.Response;
 import com.zachaczcompany.zzpj.commons.response.Success;
 import com.zachaczcompany.zzpj.security.annotations.CanEditQueue;
+import com.zachaczcompany.zzpj.security.annotations.CanEditShop;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
+import io.vavr.Tuple;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +63,11 @@ public class ShopFacade {
                 fold(Function.identity(), Success::ok);
     }
 
-    public Response<Object> findShopsInRadius(short radius) {
-        return Success.ok(null);
+    @CanEditShop
+    public Response updateShopDetails(long id, ShopUpdateDto dto) {
+        return validator.canUpdateShop(dto)
+                        .combine(validator.shopExists(id))
+                        .ap(Tuple::of)
+                        .fold(Error::concatCodes, tuple -> Success.ok(service.updateShopDetails(tuple._2, dto)));
     }
-
 }

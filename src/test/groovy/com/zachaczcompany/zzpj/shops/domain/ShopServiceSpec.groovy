@@ -2,6 +2,7 @@ package com.zachaczcompany.zzpj.shops.domain
 
 import com.zachaczcompany.zzpj.location.integration.LocationRestService
 import com.zachaczcompany.zzpj.shops.ShopCreateDto
+import com.zachaczcompany.zzpj.shops.ShopOutputDto
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
@@ -27,7 +28,7 @@ class ShopServiceSpec extends Specification {
         def dto = shopCreateDtoWithOpenHours(openHours)
 
         when: 'service is converting dto to OpenHours entity'
-        def openHoursEntity = shopService.getOpenHours(dto)
+        def openHoursEntity = shopService.getOpenHours(dto.getOpenHours())
 
         then: 'OpenHours entity has been converted correctly'
         openHoursEntity.openHours.size() == 7
@@ -183,5 +184,37 @@ class ShopServiceSpec extends Specification {
 
         then: 'shopSearch increments values and saves to repository'
         1 * shopSearchRepository.save(_ as ShopSearch)
+    }
+
+    def 'should properly update shop details'() {
+        given: 'Previously created shop and update dto'
+        def dto = anyShopUpdateDto()
+        def shop = anyShop()
+        shopRepository.save(_ as Shop) >> { Shop s -> s }
+
+        when: 'updating shop details'
+        def response = shopService.updateShopDetails(shop, dto)
+
+        then: 'updated shop contains correct values'
+        response.name == 'NewName'
+        response.details.stockType == StockType.ELECTRONIC
+        response.details.openHours[0].openFrom == LocalTime.of(12, 0)
+        response.details.openHours[0].openTo == LocalTime.of(16, 0)
+    }
+
+    def 'should not update shop details if they equal null'() {
+        given: 'Previously created shop and update dto'
+        def dto = shopUpdateDto(null, null, null)
+        def shop = anyShop()
+        shopRepository.save(_ as Shop) >> { Shop s -> s }
+
+        when: 'updating shop details'
+        def response = shopService.updateShopDetails(shop, dto)
+
+        then: 'updated shop contains correct values'
+        response.name == 'Leadl'
+        response.details.stockType == StockType.DETERGENTS
+        response.details.openHours[0].openFrom == LocalTime.NOON
+        response.details.openHours[0].openTo == LocalTime.MIDNIGHT
     }
 }

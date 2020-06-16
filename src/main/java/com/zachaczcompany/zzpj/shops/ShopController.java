@@ -44,6 +44,12 @@ class ShopController {
         return shopFacade.updateShopStats(id, dto).toResponseEntity();
     }
 
+    @Operation(summary = "Update shop details", description = "Requires shop id in param and update dto in body")
+    @PutMapping("/shops")
+    ResponseEntity updateShopDetails(@RequestParam @Nonnegative long id, @Valid @RequestBody ShopUpdateDto dto) {
+        return shopFacade.updateShopDetails(id, dto).toResponseEntity();
+    }
+
     @Operation(summary = "Get shop search history statistics for given shop id", description = "Requires shop id in param")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful shop search history statistics update"),
