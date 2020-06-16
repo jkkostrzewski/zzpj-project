@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.reports;
 
+import io.vavr.control.Either;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,20 +23,26 @@ public class ReportsController {
 
     @GetMapping("/searchStatistics/{reportType}")
     public ResponseEntity<byte[]> getSearchStatistics(@PathVariable ReportTypes reportType, @RequestParam long id) {
-        byte[] file = reportsGenerator.getSearchStatistics(reportType, id);
+        Either<String, byte[]> searchStatistics = reportsGenerator.getSearchStatistics(reportType, id);
+        if (searchStatistics.isLeft()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         String filename = "searchStatistics" + reportType.getExtension();
 
         HttpHeaders headers = getHttpHeaders(filename);
-        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+        return new ResponseEntity<>(searchStatistics.get(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/opinions/{reportType}")
     public ResponseEntity<byte[]> getOpinions(@PathVariable ReportTypes reportType, @RequestParam long id) {
-        byte[] file = reportsGenerator.getOpinions(reportType, id);
+        Either<String, byte[]> opinions = reportsGenerator.getOpinions(reportType, id);
+        if (opinions.isLeft()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         String filename = "opinions" + reportType.getExtension();
 
         HttpHeaders headers = getHttpHeaders(filename);
-        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+        return new ResponseEntity<>(opinions.get(), headers, HttpStatus.OK);
     }
 
     private HttpHeaders getHttpHeaders(String filename) {
