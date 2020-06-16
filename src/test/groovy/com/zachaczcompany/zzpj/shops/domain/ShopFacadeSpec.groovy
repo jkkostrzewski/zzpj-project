@@ -1,6 +1,7 @@
 package com.zachaczcompany.zzpj.shops.domain
 
 import com.zachaczcompany.zzpj.commons.response.Error
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
@@ -9,6 +10,7 @@ class ShopFacadeSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
     ShopValidator shopValidator = new ShopValidator(shopRepository, shopSearchRepository)
     ShopFacade shopFacade = new ShopFacade(shopRepository, shopService, shopValidator)
+    ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
     ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository)
 
     def 'should return error if findByShopId gets id of nonexistent shop'() {
