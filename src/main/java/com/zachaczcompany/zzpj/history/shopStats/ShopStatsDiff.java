@@ -1,16 +1,13 @@
 package com.zachaczcompany.zzpj.history.shopStats;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.Duration;
 
-import static lombok.AccessLevel.PACKAGE;
-
 @Getter
-@Setter(PACKAGE)
 @NoArgsConstructor
 @AllArgsConstructor
 class ShopStatsDiff {
@@ -19,14 +16,19 @@ class ShopStatsDiff {
     private int queueDiff;
     private int insideDiff;
 
-    static ShopStatsDiff of(ShopStatsMemento older, ShopStatsMemento younger){
-        if (older.isAfter(younger)){
+    static ShopStatsDiff of(ShopStatsMemento older, ShopStatsMemento younger) {
+        if (older.isAfter(younger)) {
             var temp = older;
             older = younger;
             younger = temp;
         }
 
-        return older.diff(younger);
+        return younger.diff(older);
+    }
+
+    @JsonProperty("updatedAfter")
+    public long getUpdatedAfter() {
+        return updatedAfter.toMillis();
     }
 }
 

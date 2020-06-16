@@ -36,6 +36,14 @@ class ShopStatsMemento {
 
     private final LocalDateTime timestamp;
 
+    ShopStatsMemento() {
+        id = null;
+        shop = null;
+        peopleInQueue = 0;
+        peopleInside = 0;
+        timestamp = null;
+    }
+
     ShopStatsMemento(Shop shop) {
         this.id = null;
         this.shop = shop;
@@ -57,13 +65,9 @@ class ShopStatsMemento {
             throw new IllegalArgumentException("Cannot compare stats of different shops!");
         }
 
-        var timeDiff = Duration.between(timestamp, other.timestamp);
+        var timeDiff = Duration.between(other.timestamp, timestamp);
         var insideDiff = peopleInside - other.peopleInside;
         var queueDiff = peopleInQueue - other.peopleInQueue;
         return new ShopStatsDiff(shop.getId(), timeDiff, queueDiff, insideDiff);
-    }
-
-    public boolean sameShop(ShopStatsMemento younger) {
-        return shop.getId().equals(younger.shop.getId());
     }
 }

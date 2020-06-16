@@ -25,7 +25,7 @@ class ShopService {
     private final ShopRepository repository;
 
     @Autowired
-    public ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository, ShopSearchRepository shopSearchRepository) {
+    ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository, ShopSearchRepository shopSearchRepository) {
         this.eventPublisher = eventPublisher;
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
@@ -79,7 +79,7 @@ class ShopService {
         eventPublisher.publishEvent(event);
     }
 
-    public Shop createShop(ShopCreateDto dto) {
+    Shop createShop(ShopCreateDto dto) {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
         var saved = repository.save(newShop);
         publishShopStatsChangedEvent(newShop);
