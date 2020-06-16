@@ -1,15 +1,19 @@
 package com.zachaczcompany.zzpj.shops.domain
 
 import com.zachaczcompany.zzpj.commons.response.Error
+import com.zachaczcompany.zzpj.location.integration.LocationRestService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 class ShopFacadeSpec extends Specification {
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
     ShopRepository shopRepository = Mock(ShopRepository)
+    LocationRestService locationRestService = Mock(LocationRestService)
     ShopValidator shopValidator = new ShopValidator(shopRepository, shopSearchRepository)
     ShopFacade shopFacade = new ShopFacade(shopRepository, shopService, shopValidator)
-    ShopService shopService = new ShopService(shopRepository, shopSearchRepository)
+    ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService)
 
     def 'should return error if findByShopId gets id of nonexistent shop'() {
         given: 'repository with no elements'

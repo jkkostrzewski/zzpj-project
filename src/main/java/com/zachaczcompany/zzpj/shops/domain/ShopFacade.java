@@ -13,6 +13,7 @@ import io.vavr.Tuple;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Validation;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -44,20 +45,25 @@ public class ShopFacade {
                              .collect(Collectors.toList());
     }
 
-    Optional<Shop> findShopById(Long id) {
+    public Optional<Shop> findShopById(Long id) {
         return shopRepository.findById(id);
     }
 
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
         return validator.shopExists(id)
-                        .fold(Function.identity(), s -> Success.ok(service.updateShopStats(s, dto)));
+                        .toEither()
+                        .flatMap(s -> service.updateShopStats(s, dto))
+                        .fold(Function.identity(), Success::ok);
     }
 
     public Either<Error, Shop> createShop(ShopCreateDto dto) {
         return validator.canCreateShop(dto)
-                        .toEither()
-                        .map(service::createShop);
+                        .toEither().flatMap(this::getShop);
+    }
+
+    private Either<Error, Shop> getShop(ShopCreateDto dto) {
+        return Try.of(() -> service.createShop(dto)).toEither(Error.badRequest("LOCATION_NOT_PROVIDED_NOR_FOUND"));
     }
 
     public Response findByShopSearchId(long searchId) {

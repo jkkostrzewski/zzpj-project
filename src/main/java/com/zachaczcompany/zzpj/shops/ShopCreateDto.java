@@ -38,11 +38,11 @@ public class ShopCreateDto {
     @NotBlank
     private String street;
 
-    @Schema(description = "Building number on street", example = "6")
+    @Schema(description = "Building number on street", example = "6", required = true)
     @Nonnegative
     private int building;
 
-    @Schema(description = "Building apartment", example = "12", required = true)
+    @Schema(description = "Building apartment", example = "12")
     private String apartment;
 
     @Schema(description = "Street zip code", example = "02-123", required = true)
@@ -53,8 +53,7 @@ public class ShopCreateDto {
     @NotNull
     private StockType stockType;
 
-    @Schema(description = "Geographic localization of shop", required = true)
-    @NotNull
+    @Schema(description = "Geographic localization of shop")
     private Localization localization;
 
     @Schema(description = "Shop open hours")
@@ -73,5 +72,9 @@ public class ShopCreateDto {
         private DayOfWeek dayOfWeek;
         private LocalTime openFrom;
         private LocalTime openTo;
+    }
+
+    public boolean hasLocalization() {
+        return localization != null;
     }
 }

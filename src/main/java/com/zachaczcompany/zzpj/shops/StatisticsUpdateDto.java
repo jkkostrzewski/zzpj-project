@@ -8,8 +8,7 @@ import javax.annotation.Nonnegative;
 
 @Data
 @AllArgsConstructor
-public
-class StatisticsUpdateDto {
+public class StatisticsUpdateDto {
     @Schema(description = "Number of people that entered queue recently", example = "5")
     @Nonnegative
     private int peopleJoinedQueue;
