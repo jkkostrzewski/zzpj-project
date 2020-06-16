@@ -5,7 +5,9 @@ import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.history.shopStats.ShopStatsChangedEvent;
 import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
+import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,12 +46,11 @@ class ShopService {
     private ShopDetails getDetails(ShopCreateDto dto) throws LocationNotFoundException {
         LocalizationStrategy strategy = dto
                 .hasLocalization() ? new LocalizationDefaultStrategy() : new LocalizationApiStrategy(locationRestService);
-        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
+        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto.getOpenHours()));
     }
 
-    private static OpenHours getOpenHours(ShopCreateDto dto) {
-        var daily = dto.getOpenHours()
-                       .stream()
+    private static OpenHours getOpenHours(List<ShopCreateDto.OpenHours> openHours) {
+        var daily = openHours.stream()
                        .map(ShopService::getDailyOpenHours)
                        .collect(Collectors.toSet());
         return new OpenHours(daily);
@@ -83,6 +85,15 @@ class ShopService {
     private void publishShopStatsChangedEvent(Shop shop) {
         var event = new ShopStatsChangedEvent(shop);
         eventPublisher.publishEvent(event);
+    }
+
+    
+    public Shop updateShopDetails(Shop shop, ShopUpdateDto dto) {
+        List<ShopCreateDto.OpenHours> dtoOpenHours = dto.getOpenHours();
+        OpenHours newOpenHours = dtoOpenHours != null ? getOpenHours(dtoOpenHours) : null;
+
+        shop.updateShopNameAndDetails(dto.getName(), dto.getStockType(), newOpenHours);
+        return repository.save(shop);
     }
 
     public Shop createShop(ShopCreateDto dto) throws LocationNotFoundException {

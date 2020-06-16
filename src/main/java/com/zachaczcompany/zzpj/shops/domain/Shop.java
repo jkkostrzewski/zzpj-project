@@ -4,6 +4,7 @@ import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -55,6 +56,14 @@ public class Shop {
     public Shop updatePeople(int deltaPeopleInside, int deltaPeopleInQueue) throws IllegalShopOperation {
         shopStats.updatePeopleInside(deltaPeopleInside);
         shopStats.updatePeopleInQueue(deltaPeopleInQueue);
+        return this;
+    }
+
+    public Shop updateShopNameAndDetails(String name, StockType type, OpenHours openHours) {
+        if (!StringUtils.isEmpty(name)) {
+            this.name = name;
+        }
+        details.updateDetails(type, openHours);
         return this;
     }
 }
