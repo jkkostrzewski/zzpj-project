@@ -1,18 +1,15 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
-import com.zachaczcompany.zzpj.commons.response.Error;
-import com.zachaczcompany.zzpj.commons.response.Response;
-import com.zachaczcompany.zzpj.commons.response.Success;
 import com.zachaczcompany.zzpj.shops.OpinionDto;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-class OpinionService {
+public class OpinionService {
     private final OpinionRepository opinionRepository;
     private final ShopFacade shopFacade;
 
@@ -22,27 +19,21 @@ class OpinionService {
         this.shopFacade = shopFacade;
     }
 
-    Response getById(Long id) {
-        return Option.ofOptional(opinionRepository.findById(id)).toEither(Error.badRequest("OPINION_DOES_NOT_EXIST"))
-                     .fold(Function.identity(), Success::ok);
+    Optional<Opinion> getById(Long id) {
+        return opinionRepository.findById(id);
     }
 
-    Response addOpinion(OpinionDto opinion) {
-        return Option.ofOptional(shopFacade.findShopById(opinion.getShopId()))
-                     .map(shop -> new Opinion(shop, opinion.getRate(), opinion.getDescription()))
-                     .map(opinionRepository::save)
-                     .toEither(Error.badRequest("OPINION_NOT_ADDED_SHOP_DOES_NOT_EXIST"))
-                     .fold(Function.identity(), Success::ok);
+    void addOpinion(OpinionDto opinion) {
+        shopFacade.findShopById(opinion.getShopId())
+                  .ifPresent(shop -> opinionRepository
+                          .save(new Opinion(shop, opinion.getRate(), opinion.getDescription())));
     }
 
-    Response deleteById(Long id) {
-        return Try.run(() -> opinionRepository.deleteById(id)).toEither(Error.badRequest("OPINION_DOES_NOT_EXIST"))
-                  .fold(Function.identity(), Success::ok);
+    void deleteById(Long id) {
+        opinionRepository.deleteById(id);
     }
 
-    Response getByShopId(Long shopId) {
-        return Option.ofOptional(shopFacade.findShopById(shopId)).map(opinionRepository::findByShop)
-                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"))
-                     .fold(Function.identity(), Success::ok);
+    public List<Opinion> getByShopId(Long shopId) {
+        return shopFacade.findShopById(shopId).map(opinionRepository::findByShop).orElse(Collections.emptyList());
     }
 }

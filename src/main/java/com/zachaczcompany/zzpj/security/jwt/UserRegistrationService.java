@@ -1,68 +1,51 @@
 package com.zachaczcompany.zzpj.security.jwt;
 
-import com.zachaczcompany.zzpj.commons.response.Error;
-import com.zachaczcompany.zzpj.commons.response.Response;
-import com.zachaczcompany.zzpj.commons.response.Success;
-import com.zachaczcompany.zzpj.security.OwnerSignUpDto;
-import com.zachaczcompany.zzpj.security.annotations.IsOwner;
 import com.zachaczcompany.zzpj.security.auth.database.UserEntity;
 import com.zachaczcompany.zzpj.security.auth.database.UserRepository;
 import com.zachaczcompany.zzpj.security.configuration.UserRole;
-import com.zachaczcompany.zzpj.shops.ShopCreateDto;
-import com.zachaczcompany.zzpj.shops.domain.Shop;
-import com.zachaczcompany.zzpj.shops.domain.ShopFacade;
-import io.vavr.control.Either;
-import io.vavr.control.Validation;
+import com.zachaczcompany.zzpj.security.jwt.exceptions.UserAlreadyExistsException;
+import com.zachaczcompany.zzpj.shops.domain.ShopRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Function;
+import javax.transaction.Transactional;
+
+import static com.zachaczcompany.zzpj.security.configuration.UserRole.SHOP_EMPLOYEE;
+import static com.zachaczcompany.zzpj.security.configuration.UserRole.SHOP_OWNER;
 
 @Service
 public class UserRegistrationService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ShopFacade shopFacade;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
+    private ShopRepository shopRepository;
 
-    public UserRegistrationService(UserRepository userRepository, PasswordEncoder passwordEncoder, ShopFacade shopFacade) {
+    public UserRegistrationService(UserRepository userRepository, PasswordEncoder passwordEncoder, ShopRepository shopRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.shopFacade = shopFacade;
+        this.shopRepository = shopRepository;
     }
 
-    //TODO zaimplementować przy okazji https://github.com/jkkostrzewski/zzpj-project/issues/23
-    private static Response registerAndAssignToShop(UserSignUp userSignUp) {
-        throw new IllegalStateException("NOT IMPLEMENTED YET");
+
+    /*FIXME wywalic transctional po dodaniu rejestracji z tworzeniu sklepu
+    * teraz jak iterator.next() wywali npe, to uzytkownik nie powinien zostac zarejestrowany
+    * czyli nie bedzie ownera bez sklepu. mam nadzieje
+    */
+    @Transactional
+    public void registerOwner(UserSignUp userSignUp) throws UserAlreadyExistsException {
+        registerUserAccount(userSignUp, SHOP_OWNER);
     }
 
-    public Response registerOwner(OwnerSignUpDto ownerSignUpDto) {
-        final var shopData = ownerSignUpDto.getShop();
-        return canRegister(ownerSignUpDto.getCredentials())
-                .toEither()
-                .flatMap(credentials -> registerAndCreateShop(credentials, shopData))
-                .fold(Function.identity(), Success::accepted);
+    public void registerEmployee(UserSignUp userSignUp) throws UserAlreadyExistsException {
+        registerUserAccount(userSignUp, SHOP_EMPLOYEE);
     }
 
-    private Either<Error, UserCreatedDTO> registerAndCreateShop(UserSignUp userSignUp, ShopCreateDto shopCreateDto) {
-        return shopFacade.createShop(shopCreateDto)
-                         .map(s -> registerUserAccount(userSignUp, UserRole.SHOP_OWNER, s))
-                         .map(UserCreatedDTO::new);
-    }
+    private void registerUserAccount(UserSignUp userSignUp, UserRole userRole) throws UserAlreadyExistsException {
+        if (userRepository.existsByUsername(userSignUp.getUsername())) {
+            throw new UserAlreadyExistsException("There is an user with that username: " + userSignUp.getUsername());
+        }
 
-    @IsOwner
-    public Response registerEmployee(UserSignUp userSignUp) {
-        return canRegister(userSignUp)
-                .fold(Function.identity(), UserRegistrationService::registerAndAssignToShop);
-    }
-
-    private UserEntity registerUserAccount(UserSignUp userSignUp, UserRole userRole, Shop shop) {
         String encodePassword = passwordEncoder.encode(userSignUp.getPassword());
-        UserEntity userEntity = new UserEntity(userSignUp.getUsername(), encodePassword, userRole, shop);
-        return userRepository.save(userEntity);
-    }
-
-    private Validation<Error, UserSignUp> canRegister(UserSignUp userSignUp) {
-        return !userRepository.existsByUsername(userSignUp.getUsername()) ? Validation.valid(userSignUp) : Validation
-                .invalid(Error.badRequest("USERNAME_ALREADY_IN_USE"));
+        UserEntity userEntity = new UserEntity(userSignUp.getUsername(), encodePassword, userRole, shopRepository.findAll().iterator().next());
+        userRepository.save(userEntity);
     }
 }

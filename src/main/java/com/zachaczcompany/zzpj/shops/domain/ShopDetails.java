@@ -1,7 +1,6 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,17 +40,7 @@ class ShopDetails {
         this.openHours = openHours;
     }
 
-    @JsonProperty
     Set<DailyOpenHours> getOpenHours() {
         return openHours.getOpenHours();
-    }
-
-    void updateDetails(StockType newStockType, OpenHours newOpenHours) {
-        if (newStockType != null) {
-            stockType = newStockType;
-        }
-        if (newOpenHours != null) {
-            openHours = newOpenHours;
-        }
     }
 }

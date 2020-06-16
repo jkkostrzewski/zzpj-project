@@ -1,5 +1,5 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
-public enum StockType {
+enum StockType {
     FOOD, ELECTRONIC, DETERGENTS, SERVICE
 }

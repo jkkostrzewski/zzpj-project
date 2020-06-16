@@ -27,7 +27,7 @@ public class ShopStats {
 
     private int peopleInQueue;
 
-    public ShopStats(int maxCapacity, int peopleInside, int peopleInQueue) {
+    ShopStats(int maxCapacity, int peopleInside, int peopleInQueue) {
         this.maxCapacity = maxCapacity;
         this.peopleInside = peopleInside;
         this.peopleInQueue = peopleInQueue;

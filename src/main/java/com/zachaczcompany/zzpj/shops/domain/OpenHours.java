@@ -21,7 +21,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = PACKAGE)
-public class OpenHours {
+class OpenHours {
     @Setter(PRIVATE)
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "DAILY_OPEN_HOURS", joinColumns = @JoinColumn(name = "OPEN_HOURS_ID"))

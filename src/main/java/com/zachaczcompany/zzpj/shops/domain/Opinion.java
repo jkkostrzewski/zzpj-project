@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -19,7 +20,7 @@ public class Opinion {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = ALL)
     private Shop shop;
 
     @Column(nullable = false)
