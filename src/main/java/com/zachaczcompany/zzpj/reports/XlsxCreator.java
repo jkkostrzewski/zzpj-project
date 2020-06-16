@@ -1,6 +1,10 @@
 package com.zachaczcompany.zzpj.reports;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
@@ -17,17 +21,17 @@ public class XlsxCreator implements ReportFileGenerator {
 
     private final Workbook excelWorkbook;
     private final Sheet sheet;
-    private int currentRow;
+    private int currentRow = 0;
 
     public XlsxCreator() {
         excelWorkbook = new XSSFWorkbook();
         sheet = excelWorkbook.createSheet();
-        currentRow = 0;
         stringCellStyle = StylesCreator.stringCellStyle(excelWorkbook);
         doubleCellStyle = StylesCreator.doubleCellStyle(excelWorkbook);
         integerCellStyle = StylesCreator.integerCellStyle(excelWorkbook);
     }
 
+    @Override
     public byte[] getReportBytes() {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
@@ -38,12 +42,14 @@ public class XlsxCreator implements ReportFileGenerator {
         return stream.toByteArray();
     }
 
+    @Override
     public RowBuilder addRow() {
         currentRow++;
         Row row = sheet.createRow(currentRow);
         return new RowBuilder(row);
     }
 
+    @Override
     public void createHeaderRow(List<String> columnNames) {
         Row header = sheet.createRow(0);
         sheet.setColumnWidth(0, CELL_WIDTH_24_CHARS);
@@ -80,7 +86,7 @@ public class XlsxCreator implements ReportFileGenerator {
         }
     }
 
-    public final class RowBuilder implements IRowBuilder {
+    final class RowBuilder implements IRowBuilder {
         private final Row row;
         int currentCell = 0;
 
@@ -88,6 +94,7 @@ public class XlsxCreator implements ReportFileGenerator {
             this.row = row;
         }
 
+        @Override
         public RowBuilder cell(int value) {
             Cell cell = newCell();
             cell.setCellValue(value);
@@ -95,6 +102,7 @@ public class XlsxCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(long value) {
             Cell cell = newCell();
             cell.setCellValue(value);
@@ -102,6 +110,7 @@ public class XlsxCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(String value) {
             Cell cell = newCell();
             cell.setCellValue(value);
@@ -109,6 +118,7 @@ public class XlsxCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(double value) {
             Cell cell = newCell();
             cell.setCellValue(value);

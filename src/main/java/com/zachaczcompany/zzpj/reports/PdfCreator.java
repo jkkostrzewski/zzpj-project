@@ -1,7 +1,11 @@
 package com.zachaczcompany.zzpj.reports;
 
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -10,10 +14,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class PdfCreator implements ReportFileGenerator {
-    private Document document;
+    private final Document document;
     private PdfPTable table;
     private int currentRow = 0;
-    private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
     public PdfCreator() {
         this.document = new Document();
@@ -25,6 +29,7 @@ public class PdfCreator implements ReportFileGenerator {
         document.open();
     }
 
+    @Override
     public void createHeaderRow(List<String> columnNames) {
         this.table = new PdfPTable(columnNames.size());
         columnNames
@@ -37,6 +42,7 @@ public class PdfCreator implements ReportFileGenerator {
                 });
     }
 
+    @Override
     public RowBuilder addRow() {
         currentRow++;
         return new RowBuilder(table, currentRow % 2 == 0);
@@ -73,7 +79,7 @@ public class PdfCreator implements ReportFileGenerator {
         }
     }
 
-    public static final class RowBuilder implements IRowBuilder {
+    static final class RowBuilder implements IRowBuilder {
         private final PdfPTable table;
         private boolean isEvenRow;
 
@@ -82,6 +88,7 @@ public class PdfCreator implements ReportFileGenerator {
             this.isEvenRow = isEvenRow;
         }
 
+        @Override
         public RowBuilder cell(int value) {
             PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(value)));
             StyleCreator.basicStyle(cell);
@@ -90,6 +97,7 @@ public class PdfCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(double value) {
             PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(value)));
             StyleCreator.basicStyle(cell);
@@ -98,6 +106,7 @@ public class PdfCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(long value) {
             PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(value)));
             StyleCreator.basicStyle(cell);
@@ -106,6 +115,7 @@ public class PdfCreator implements ReportFileGenerator {
             return this;
         }
 
+        @Override
         public RowBuilder cell(String value) {
             PdfPCell cell = new PdfPCell(new Paragraph(value));
             StyleCreator.basicStyle(cell);

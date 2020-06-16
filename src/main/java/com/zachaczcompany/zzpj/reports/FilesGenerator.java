@@ -13,19 +13,21 @@ public class FilesGenerator {
                 "Can Enter", "Max queue length", "Max Capacity");
 
         rfg.createHeaderRow(columnNames);
-        rows.forEach(row -> {
-            rfg
-                    .addRow()
-                    .cell(row.getShopId())
-                    .cell(row.getAddress())
-                    .cell(row.getName())
-                    .cell(row.getStockType())
-                    .cell(row.getIsOpen())
-                    .cell(row.getCanEnter())
-                    .cell(row.getMaxQueueLength())
-                    .cell(row.getMaxCapacity());
-        });
+        rows.forEach(row -> createShopSearchRow(rfg, row));
         return rfg.getReportBytes();
+    }
+
+    private static void createShopSearchRow(ReportFileGenerator rfg, ShopSearch row) {
+        rfg
+                .addRow()
+                .cell(row.getShopId())
+                .cell(row.getAddress())
+                .cell(row.getName())
+                .cell(row.getStockType())
+                .cell(row.getIsOpen())
+                .cell(row.getCanEnter())
+                .cell(row.getMaxQueueLength())
+                .cell(row.getMaxCapacity());
     }
 
     public static byte[] getOpinionsFileBytes(List<Opinion> rows,
@@ -33,13 +35,15 @@ public class FilesGenerator {
         List<String> columnNames = List.of("Shop id", "Rate", "Description");
 
         rfg.createHeaderRow(columnNames);
-        rows.forEach(row -> {
-            rfg
-                    .addRow()
-                    .cell(row.getShop().getId())
-                    .cell(row.getRate())
-                    .cell(row.getDescription());
-        });
+        rows.forEach(row -> createOpinionsRecord(rfg, row));
         return rfg.getReportBytes();
+    }
+
+    private static void createOpinionsRecord(ReportFileGenerator rfg, Opinion row) {
+        rfg
+                .addRow()
+                .cell(row.getShop().getId())
+                .cell(row.getRate())
+                .cell(row.getDescription());
     }
 }

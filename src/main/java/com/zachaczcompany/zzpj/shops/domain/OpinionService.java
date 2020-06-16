@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-class OpinionService {
+public class OpinionService {
     private final OpinionRepository opinionRepository;
     private final ShopFacade shopFacade;
 
@@ -33,7 +33,7 @@ class OpinionService {
         opinionRepository.deleteById(id);
     }
 
-    List<Opinion> getByShopId(Long shopId) {
+    public List<Opinion> getByShopId(Long shopId) {
         return shopFacade.findShopById(shopId).map(opinionRepository::findByShop).orElse(Collections.emptyList());
     }
 }
