@@ -71,13 +71,12 @@ class ShopService {
                   .map(saveAndMap);
     }
 
-    public Either<Error, Shop> updateShopDetails(Shop shop, ShopUpdateDto dto) {
+    public Shop updateShopDetails(Shop shop, ShopUpdateDto dto) {
         List<ShopCreateDto.OpenHours> dtoOpenHours = dto.getOpenHours();
         OpenHours newOpenHours = dtoOpenHours != null ? getOpenHours(dtoOpenHours) : null;
 
-        return Try.of(() -> shop.updateShopNameAndDetails(dto.getName(), dto.getStockType(), newOpenHours))
-                  .toEither(Error.badRequest("CANNOT_UPDATE_DETAILS"))
-                  .map(repository::save);
+        shop.updateShopNameAndDetails(dto.getName(), dto.getStockType(), newOpenHours);
+        return repository.save(shop);
     }
 
     public Shop createShop(ShopCreateDto dto) {

@@ -192,11 +192,10 @@ class ShopServiceSpec extends Specification {
         def response = shopService.updateShopDetails(shop, dto)
 
         then: 'updated shop contains correct values'
-        response.isRight()
-        response.get().name == 'NewName'
-        response.get().details.stockType == StockType.ELECTRONIC
-        response.get().details.openHours[0].openFrom == LocalTime.of(12, 0)
-        response.get().details.openHours[0].openTo == LocalTime.of(16, 0)
+        response.name == 'NewName'
+        response.details.stockType == StockType.ELECTRONIC
+        response.details.openHours[0].openFrom == LocalTime.of(12, 0)
+        response.details.openHours[0].openTo == LocalTime.of(16, 0)
     }
 
     def 'should not update shop details if they equal null'() {
@@ -209,10 +208,9 @@ class ShopServiceSpec extends Specification {
         def response = shopService.updateShopDetails(shop, dto)
 
         then: 'updated shop contains correct values'
-        response.isRight()
-        response.get().name == 'Leadl'
-        response.get().details.stockType == StockType.DETERGENTS
-        response.get().details.openHours[0].openFrom == LocalTime.NOON
-        response.get().details.openHours[0].openTo == LocalTime.MIDNIGHT
+        response.name == 'Leadl'
+        response.details.stockType == StockType.DETERGENTS
+        response.details.openHours[0].openFrom == LocalTime.NOON
+        response.details.openHours[0].openTo == LocalTime.MIDNIGHT
     }
 }
