@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-class Route {
+public class Route {
     private float distance;
     private float duration;
 }

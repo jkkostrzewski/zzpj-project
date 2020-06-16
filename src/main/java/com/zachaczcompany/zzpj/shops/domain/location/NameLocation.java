@@ -1,5 +1,7 @@
 package com.zachaczcompany.zzpj.shops.domain.location;
 
+import java.util.Objects;
+
 public class NameLocation implements Location {
     private final String name;
 
@@ -9,6 +11,6 @@ public class NameLocation implements Location {
 
     @Override
     public String getName() {
-        return name;
+        return Objects.toString(name, "");
     }
 }

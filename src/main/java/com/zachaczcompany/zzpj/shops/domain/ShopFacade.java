@@ -11,12 +11,10 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class ShopFacade {
@@ -33,11 +31,7 @@ public class ShopFacade {
     }
 
     public Iterable<ShopOutputDto> findAll(ShopFilterCriteria criteria, Pageable pageable) {
-        Specification<Shop> spec = criteria.toSpecification();
-        return shopRepository.findAll(spec, pageable).stream()
-                             .peek(shop -> service.updateShopSearchStats(shop.getId(), criteria))
-                             .map(ShopOutputDto::new)
-                             .collect(Collectors.toList());
+        return service.findAll(criteria, pageable);
     }
 
     public Optional<Shop> findShopById(Long id) {
@@ -65,4 +59,9 @@ public class ShopFacade {
         return validator.searchExists(searchId).
                 fold(Function.identity(), Success::ok);
     }
+
+    public Response<Object> findShopsInRadius(short radius) {
+        return Success.ok(null);
+    }
+
 }

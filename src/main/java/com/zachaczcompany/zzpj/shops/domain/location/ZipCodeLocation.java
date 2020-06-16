@@ -1,5 +1,7 @@
 package com.zachaczcompany.zzpj.shops.domain.location;
 
+import java.util.Objects;
+
 public class ZipCodeLocation extends LocationDecorator {
     private final String zipCode;
 
@@ -10,6 +12,6 @@ public class ZipCodeLocation extends LocationDecorator {
 
     @Override
     public String getName() {
-        return super.getName() + ", " + zipCode;
+        return super.getName() + Objects.toString(", " + zipCode, "");
     }
 }
