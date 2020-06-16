@@ -2,12 +2,14 @@ package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.commons.ZipCode;
 import com.zachaczcompany.zzpj.commons.response.Error;
+import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +22,13 @@ import java.util.stream.Collectors;
 class ShopService {
     private final ShopRepository repository;
     private final ShopSearchRepository searchRepository;
+    private final LocationRestService locationRestService;
 
     @Autowired
-    public ShopService(ShopRepository repository, ShopSearchRepository shopSearchRepository) {
+    public ShopService(ShopRepository repository, ShopSearchRepository shopSearchRepository, LocationRestService locationRestService) {
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
+        this.locationRestService = locationRestService;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -32,8 +36,10 @@ class ShopService {
                 .getZipCode()));
     }
 
-    private static ShopDetails getDetails(ShopCreateDto dto) {
-        return new ShopDetails(dto.getStockType(), dto.getLocalization(), getOpenHours(dto));
+    private ShopDetails getDetails(ShopCreateDto dto) throws NotFoundException {
+        LocalizationStrategy strategy = dto
+                .hasLocalization() ? new LocalizationDefaultStrategy() : new LocalizationApiStrategy(locationRestService);
+        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
     }
 
     private static OpenHours getOpenHours(ShopCreateDto dto) {
@@ -69,7 +75,7 @@ class ShopService {
                   .map(saveAndMap);
     }
 
-    public Shop createShop(ShopCreateDto dto) {
+    public Shop createShop(ShopCreateDto dto) throws NotFoundException {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
         var saved = repository.save(newShop);
         createSearch(saved);

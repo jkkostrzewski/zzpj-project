@@ -8,6 +8,7 @@ import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import io.vavr.control.Either;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -51,8 +52,11 @@ public class ShopFacade {
 
     public Either<Error, Shop> createShop(ShopCreateDto dto) {
         return validator.canCreateShop(dto)
-                        .toEither()
-                        .map(service::createShop);
+                        .toEither().flatMap(this::getShop);
+    }
+
+    private Either<Error, Shop> getShop(ShopCreateDto dto) {
+        return Try.of(() -> service.createShop(dto)).toEither(Error.badRequest("LOCATION_NOT_PROVIDED_NOR_FOUND"));
     }
 
     public Response findByShopSearchId(long searchId) {
