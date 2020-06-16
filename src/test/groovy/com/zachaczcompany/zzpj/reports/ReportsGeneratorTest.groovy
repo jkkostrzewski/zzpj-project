@@ -17,7 +17,7 @@ class ReportsGeneratorTest extends Specification {
 
     def 'should return list of optional'() {
         given: 'opinions to fetch'
-        opinionService.getByShopId(_) >> options;
+        opinionService.getListByShopId(_) >> options;
         when:
         def optionsData = reportsGenerator.getOpinionsData(1L)
         then:
@@ -27,7 +27,7 @@ class ReportsGeneratorTest extends Specification {
 
     def 'should throw exception where no exists opinions about shop'() {
         given: 'empty list of opinions'
-        opinionService.getByShopId(_) >> List.of()
+        opinionService.getListByShopId(_) >> List.of()
         when:
         reportsGenerator.getOpinionsData(1L)
         then:

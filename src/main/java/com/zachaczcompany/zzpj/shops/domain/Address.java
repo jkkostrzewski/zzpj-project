@@ -1,11 +1,12 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
+import com.zachaczcompany.zzpj.commons.ZipCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Pattern;
+import javax.persistence.Embedded;
 
 import static lombok.AccessLevel.PACKAGE;
 
@@ -22,6 +23,6 @@ public class Address {
 
     private String apartment;
 
-    @Pattern(regexp = "\\d{2}-\\d{3}")
-    private String zipCode;
+    @Embedded
+    private ZipCode zipCode;
 }
