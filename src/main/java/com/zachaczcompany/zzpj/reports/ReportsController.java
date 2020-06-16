@@ -21,28 +21,24 @@ public class ReportsController {
         this.reportsGenerator = reportsGenerator;
     }
 
-    @GetMapping("/searchStatistics/{reportType}")
-    public ResponseEntity<byte[]> getSearchStatistics(@PathVariable ReportTypes reportType, @RequestParam long id) {
+    @GetMapping("/searchStatistics/{id}")
+    public ResponseEntity<byte[]> getSearchStatistics(@RequestParam ReportTypes reportType, @PathVariable long id) {
         Either<String, byte[]> searchStatistics = reportsGenerator.getSearchStatistics(reportType, id);
-        if (searchStatistics.isLeft()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        String filename = "searchStatistics" + reportType.getExtension();
-
-        HttpHeaders headers = getHttpHeaders(filename);
-        return new ResponseEntity<>(searchStatistics.get(), headers, HttpStatus.OK);
+        return searchStatistics.fold(e -> new ResponseEntity<>(HttpStatus.NOT_FOUND),
+                e -> getResponseFile("opinions", reportType, e));
     }
 
-    @GetMapping("/opinions/{reportType}")
-    public ResponseEntity<byte[]> getOpinions(@PathVariable ReportTypes reportType, @RequestParam long id) {
+    @GetMapping("/opinions/{id}")
+    public ResponseEntity<byte[]> getOpinions(@RequestParam ReportTypes reportType, @PathVariable long id) {
         Either<String, byte[]> opinions = reportsGenerator.getOpinions(reportType, id);
-        if (opinions.isLeft()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        String filename = "opinions" + reportType.getExtension();
+        return opinions.fold(e -> new ResponseEntity<>(HttpStatus.NOT_FOUND),
+                e -> getResponseFile("opinions", reportType, e));
+    }
 
+    private ResponseEntity<byte[]> getResponseFile(String name, ReportTypes reportType, byte[] opinions) {
+        String filename = name + reportType.getExtension();
         HttpHeaders headers = getHttpHeaders(filename);
-        return new ResponseEntity<>(opinions.get(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(opinions, headers, HttpStatus.OK);
     }
 
     private HttpHeaders getHttpHeaders(String filename) {
