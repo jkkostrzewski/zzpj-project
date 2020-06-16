@@ -3,6 +3,7 @@ package com.zachaczcompany.zzpj.shops.domain
 import com.zachaczcompany.zzpj.location.integration.LocationRestService
 import com.zachaczcompany.zzpj.shops.ShopCreateDto
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
@@ -15,7 +16,8 @@ class ShopServiceSpec extends Specification {
     ShopRepository shopRepository = Mock(ShopRepository)
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
     LocationRestService locationRestService = Mock(LocationRestService)
-    ShopService shopService = new ShopService(shopRepository, shopSearchRepository, locationRestService)
+    ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService)
 
     def 'should get open hours from dto'() {
         given: 'shop create dto'
