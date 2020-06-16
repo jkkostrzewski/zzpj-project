@@ -39,14 +39,16 @@ public class ShopFacade {
                              .collect(Collectors.toList());
     }
 
-    Optional<Shop> findShopById(Long id) {
+    public Optional<Shop> findShopById(Long id) {
         return shopRepository.findById(id);
     }
 
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
         return validator.shopExists(id)
-                        .fold(Function.identity(), s -> Success.ok(service.updateShopStats(s, dto)));
+                        .toEither()
+                        .flatMap(s -> service.updateShopStats(s, dto))
+                        .fold(Function.identity(), Success::ok);
     }
 
     public Either<Error, Shop> createShop(ShopCreateDto dto) {
