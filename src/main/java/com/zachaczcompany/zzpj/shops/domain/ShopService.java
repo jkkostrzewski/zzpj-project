@@ -71,7 +71,6 @@ class ShopService {
                   .map(saveAndMap);
     }
 
-    @Transactional(rollbackOn = IllegalShopOperation.class)
     public Either<Error, Shop> updateShopDetails(Shop shop, ShopUpdateDto dto) {
         List<ShopCreateDto.OpenHours> dtoOpenHours = dto.getOpenHours();
         OpenHours newOpenHours = dtoOpenHours != null ? getOpenHours(dtoOpenHours) : null;
