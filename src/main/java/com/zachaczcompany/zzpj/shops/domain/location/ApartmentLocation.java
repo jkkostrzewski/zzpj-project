@@ -10,6 +10,6 @@ public class ApartmentLocation extends LocationDecorator {
 
     @Override
     public String getName() {
-        return super.getName() +" " + apartment;
+        return super.getName() + " " + apartment;
     }
 }
