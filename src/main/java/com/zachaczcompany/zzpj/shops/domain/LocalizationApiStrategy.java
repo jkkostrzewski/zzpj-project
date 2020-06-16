@@ -9,7 +9,7 @@ import com.zachaczcompany.zzpj.shops.domain.location.CityLocation;
 import com.zachaczcompany.zzpj.shops.domain.location.NameLocation;
 import com.zachaczcompany.zzpj.shops.domain.location.StreetLocation;
 import com.zachaczcompany.zzpj.shops.domain.location.ZipCodeLocation;
-import javassist.NotFoundException;
+import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
 
 import static java.lang.Double.parseDouble;
 
@@ -21,14 +21,17 @@ class LocalizationApiStrategy implements LocalizationStrategy {
     }
 
     @Override
-    public Localization getLocalization(ShopCreateDto dto) throws NotFoundException {
-        String query = new CityLocation(new ZipCodeLocation(new ApartmentLocation(new BuildingLocation(new StreetLocation(new NameLocation(dto
-                .getName()), dto.getStreet()), String.valueOf(dto.getBuilding())), dto.getApartment()), dto
-                .getZipCode()), dto
-                .getCity()).getName();
+    public Localization getLocalization(ShopCreateDto dto) throws LocationNotFoundException {
+        NameLocation nameLocation = new NameLocation(dto.getName());
+        StreetLocation streetLocation = new StreetLocation(nameLocation, dto.getStreet());
+        BuildingLocation buildingLocation = new BuildingLocation(streetLocation, String.valueOf(dto.getBuilding()));
+        ApartmentLocation apartmentLocation = new ApartmentLocation(buildingLocation, dto.getApartment());
+        ZipCodeLocation zipCodeLocation = new ZipCodeLocation(apartmentLocation, dto.getZipCode());
+        String query = new CityLocation(zipCodeLocation, dto.getCity()).getName();
+
         LocationResponse response = locationRestService.getLocations(query)
                                                        .stream().findFirst()
-                                                       .orElseThrow(() -> new NotFoundException("Unable to geocode"));
+                                                       .orElseThrow(() -> new LocationNotFoundException("Unable to geocode"));
         return new Localization(parseDouble(response.getLat()), parseDouble(response.getLon()));
     }
 }

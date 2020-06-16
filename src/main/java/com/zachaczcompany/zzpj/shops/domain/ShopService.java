@@ -7,9 +7,9 @@ import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
+import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ class ShopService {
                 .getZipCode()));
     }
 
-    private ShopDetails getDetails(ShopCreateDto dto) throws NotFoundException {
+    private ShopDetails getDetails(ShopCreateDto dto) throws LocationNotFoundException {
         LocalizationStrategy strategy = dto
                 .hasLocalization() ? new LocalizationDefaultStrategy() : new LocalizationApiStrategy(locationRestService);
         return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
@@ -75,7 +75,7 @@ class ShopService {
                   .map(saveAndMap);
     }
 
-    public Shop createShop(ShopCreateDto dto) throws NotFoundException {
+    public Shop createShop(ShopCreateDto dto) throws LocationNotFoundException {
         var newShop = new Shop(dto.getName(), getAddress(dto), getDetails(dto), getShopStats(dto));
         var saved = repository.save(newShop);
         createSearch(saved);

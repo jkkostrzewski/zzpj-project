@@ -1,8 +1,8 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
-import javassist.NotFoundException;
+import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
 
 interface LocalizationStrategy {
-    Localization getLocalization(ShopCreateDto dto) throws NotFoundException;
+    Localization getLocalization(ShopCreateDto dto) throws LocationNotFoundException;
 }
