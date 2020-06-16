@@ -12,6 +12,7 @@ import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.domain.Shop;
 import com.zachaczcompany.zzpj.shops.domain.ShopFacade;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,10 @@ public class UserRegistrationService {
         this.shopFacade = shopFacade;
     }
 
-    //TODO zaimplementować przy okazji https://github.com/jkkostrzewski/zzpj-project/issues/23
-    private static Response registerAndAssignToShop(UserSignUp userSignUp) {
-        throw new IllegalStateException("NOT IMPLEMENTED YET");
+    private Either<Error, UserCreatedDTO> registerAndAssignToShop(String username, UserSignUp userSignUp) {
+        return Option.ofOptional(userRepository.findByUsername(username)).map(UserEntity::getShop)
+                     .map(s -> registerUserAccount(userSignUp, UserRole.SHOP_EMPLOYEE, s))
+                     .map(UserCreatedDTO::new).toEither(Error.badRequest("COULD_NOT_ADD_EMPLOYEE"));
     }
 
     public Response registerOwner(OwnerSignUpDto ownerSignUpDto) {
@@ -50,9 +52,11 @@ public class UserRegistrationService {
     }
 
     @IsOwner
-    public Response registerEmployee(UserSignUp userSignUp) {
+    Response registerEmployee(String username, UserSignUp userSignUp) {
         return canRegister(userSignUp)
-                .fold(Function.identity(), UserRegistrationService::registerAndAssignToShop);
+                .toEither()
+                .flatMap(employee -> registerAndAssignToShop(username, employee))
+                .fold(Function.identity(), Success::accepted);
     }
 
     private UserEntity registerUserAccount(UserSignUp userSignUp, UserRole userRole, Shop shop) {

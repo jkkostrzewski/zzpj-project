@@ -1,16 +1,18 @@
 package com.zachaczcompany.zzpj.security.jwt;
 
 import com.zachaczcompany.zzpj.security.OwnerSignUpDto;
-import com.zachaczcompany.zzpj.shops.domain.ShopFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -41,7 +43,7 @@ public class RegistrationController {
             @ApiResponse(responseCode = "400", description = "Username has already been used")
     })
     @PostMapping("/employee")
-    public ResponseEntity signUpEmployee(@RequestBody @Valid UserSignUp userSignUp) {
-        return userRegistrationService.registerEmployee(userSignUp).toResponseEntity();
+    public ResponseEntity signUpEmployee(Authentication authentication, @RequestBody @Valid UserSignUp userSignUp) {
+        return userRegistrationService.registerEmployee(authentication.getName(), userSignUp).toResponseEntity();
     }
 }
