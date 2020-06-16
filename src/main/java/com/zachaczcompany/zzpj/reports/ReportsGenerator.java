@@ -45,7 +45,7 @@ public class ReportsGenerator {
     }
 
     private List<Opinion> getOpinionsData(Long shopId) throws NoDataException {
-        List<Opinion> opinions = opinionService.getByShopId(shopId);
+        List<Opinion> opinions = opinionService.getListByShopId(shopId);
         if (opinions.size() < 1) {
             throw new NoDataException();
         }
