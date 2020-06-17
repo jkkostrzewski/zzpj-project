@@ -9,6 +9,7 @@ import com.zachaczcompany.zzpj.distance.StraightLineDistance;
 import com.zachaczcompany.zzpj.history.shopStats.ShopStatsChangedEvent;
 import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
+import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.ShopWithDistanceOutputDto;
