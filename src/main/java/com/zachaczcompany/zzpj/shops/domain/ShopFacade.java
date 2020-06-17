@@ -4,10 +4,16 @@ import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.commons.response.Response;
 import com.zachaczcompany.zzpj.commons.response.Success;
 import com.zachaczcompany.zzpj.security.annotations.CanEditQueue;
+import com.zachaczcompany.zzpj.security.annotations.CanEditShop;
+import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
+import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
+import io.vavr.Tuple;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
-import io.vavr.control.Option;
+import io.vavr.control.Validation;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,54 +26,56 @@ import java.util.stream.Collectors;
 @Service
 public class ShopFacade {
     private final ShopRepository shopRepository;
-    private final ShopService shopService;
-    private final ShopSearchRepository shopSearchRepository;
+    private final ShopValidator validator;
+    private final ShopService service;
 
     @Autowired
     public ShopFacade(ShopRepository shopRepository, ShopService shopService,
-                      ShopSearchRepository shopSearchRepository) {
+                      ShopValidator validator) {
         this.shopRepository = shopRepository;
-        this.shopService = shopService;
-        this.shopSearchRepository = shopSearchRepository;
+        this.validator = validator;
+        this.service = shopService;
     }
 
     public Iterable<ShopOutputDto> findAll(ShopFilterCriteria criteria, Pageable pageable) {
         Specification<Shop> spec = criteria.toSpecification();
         return shopRepository.findAll(spec, pageable).stream()
-                             .peek(shop -> updateShopSearchStats(shop.getId(), criteria))
+                             .peek(shop -> service.updateShopSearchStats(shop.getId(), criteria))
                              .map(ShopOutputDto::new)
                              .collect(Collectors.toList());
     }
 
-    Optional<Shop> findShopById(Long id) {
+    public Optional<Shop> findShopById(Long id) {
         return shopRepository.findById(id);
     }
 
     @CanEditQueue
     public Response updateShopStats(long id, StatisticsUpdateDto dto) {
-        return validateId(id).flatMap(s -> shopService.updateShopStats(s, dto))
-                             .fold(Function.identity(), Success::ok);
+        return validator.shopExists(id)
+                        .toEither()
+                        .flatMap(s -> service.updateShopStats(s, dto))
+                        .fold(Function.identity(), Success::ok);
     }
 
-    public Response findByShopId(long shopId) {
-        return validateShopSearchId(shopId).fold(Function.identity(), Success::ok);
+    public Either<Error, Shop> createShop(ShopCreateDto dto) {
+        return validator.canCreateShop(dto)
+                        .toEither().flatMap(this::getShop);
     }
 
-    private Either<Error, ShopSearch> validateShopSearchId(long shopId) {
-        return Option.ofOptional(shopSearchRepository.findById(shopId))
-                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+    private Either<Error, Shop> getShop(ShopCreateDto dto) {
+        return Try.of(() -> service.createShop(dto)).toEither(Error.badRequest("LOCATION_NOT_PROVIDED_NOR_FOUND"));
     }
 
-    private Either<Error, Shop> validateId(long id) {
-        return Option.ofOptional(shopRepository.findById(id))
-                     .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"));
+    public Response findByShopSearchId(long searchId) {
+        return validator.searchExists(searchId).
+                fold(Function.identity(), Success::ok);
     }
 
-    private void updateShopSearchStats(Long shopId, ShopFilterCriteria criteria) {
-        Optional<ShopSearch> shopSearch = shopSearchRepository.findByShopId(shopId);
-        shopSearch.ifPresent(searchHistory -> {
-            searchHistory.incrementValues(criteria);
-            shopSearchRepository.save(searchHistory);
-        });
+    @CanEditShop
+    public Response updateShopDetails(long id, ShopUpdateDto dto) {
+        return validator.canUpdateShop(dto)
+                        .combine(validator.shopExists(id))
+                        .ap(Tuple::of)
+                        .fold(Error::concatCodes, tuple -> Success.ok(service.updateShopDetails(tuple._2, dto)));
     }
 }
