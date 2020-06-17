@@ -9,10 +9,12 @@ import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 @Service
-class OpinionService {
+public class OpinionService {
     private final OpinionRepository opinionRepository;
     private final ShopFacade shopFacade;
 
@@ -44,5 +46,9 @@ class OpinionService {
         return Option.ofOptional(shopFacade.findShopById(shopId)).map(opinionRepository::findByShop)
                      .toEither(Error.badRequest("SHOP_DOES_NOT_EXIST"))
                      .fold(Function.identity(), Success::ok);
+    }
+
+    public List<Opinion> getListByShopId(Long shopId) {
+        return shopFacade.findShopById(shopId).map(opinionRepository::findByShop).orElse(Collections.emptyList());
     }
 }
