@@ -17,7 +17,9 @@ class ShopServiceSpec extends Specification {
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
     LocationRestService locationRestService = Mock(LocationRestService)
     ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
-    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService, notificationService)
+    NotificationService notificationService = Mock(NotificationService)
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService,
+            notificationService)
 
     def 'should get open hours from dto'() {
         given: 'shop create dto'
