@@ -5,7 +5,6 @@ import com.zachaczcompany.zzpj.commons.response.Error;
 import com.zachaczcompany.zzpj.history.shopStats.ShopStatsChangedEvent;
 import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
-import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
 import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
@@ -25,17 +24,23 @@ import java.util.stream.Collectors;
 
 @Service
 class ShopService {
+    private static final double NOTIFIER_PEOPLE_MULTIPLIER = 0.75;
+
     private final ApplicationEventPublisher eventPublisher;
     private final ShopSearchRepository searchRepository;
     private final ShopRepository repository;
     private final LocationRestService locationRestService;
+    private final NotificationService notificationService;
 
     @Autowired
-    ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository, ShopSearchRepository shopSearchRepository, LocationRestService locationRestService) {
+    ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository,
+                ShopSearchRepository shopSearchRepository, LocationRestService locationRestService,
+                NotificationService notificationService) {
         this.eventPublisher = eventPublisher;
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
         this.locationRestService = locationRestService;
+        this.notificationService = notificationService;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -84,6 +89,12 @@ class ShopService {
 
     private void publishShopStatsChangedEvent(Shop shop) {
         var event = new ShopStatsChangedEvent(shop);
+
+        if(shop.getShopStats().getPeopleInside() > shop.getShopStats().getMaxCapacity() * NOTIFIER_PEOPLE_MULTIPLIER) {
+            notificationService.sendNotificationsToShopList(shop);
+        }
+        notificationService.deleteExpiredNotifications();
+
         eventPublisher.publishEvent(event);
     }
 

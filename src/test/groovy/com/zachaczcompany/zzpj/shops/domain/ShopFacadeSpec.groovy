@@ -13,7 +13,7 @@ class ShopFacadeSpec extends Specification {
     ShopValidator shopValidator = new ShopValidator(shopRepository, shopSearchRepository)
     ShopFacade shopFacade = new ShopFacade(shopRepository, shopService, shopValidator)
     ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
-    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService)
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService, notificationService)
 
     def 'should return error if findByShopId gets id of nonexistent shop'() {
         given: 'repository with no elements'
