@@ -162,6 +162,6 @@ class ShopService {
     private Iterable<ShopOutputDto> getOutputList(List<Tuple2<Shop, Double>> closestShops, DistanceCalculationStrategy strategy) {
         return closestShops.stream()
                            .map(t -> new ShopWithDistanceOutputDto(t._1, t._2, strategy.isAccurate()))
-                           .collect(Collectors.toList());
+                           .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -29,7 +29,7 @@ public class LocationApiDistance implements DistanceCalculationStrategy {
         return fastestRoutes.stream()
                             .map(Route::getDistance)
                             .mapToDouble(d -> d)
-                            .max()
+                            .min()
                             .orElseThrow();
     }
 

@@ -19,12 +19,16 @@ public class Localization {
     private final static int EARTH_RADIUS = 6371;
 
     public double distanceInMeters(Localization other) {
-        double deltaLat = Math.toRadians(other.latitude - latitude);
-        double deltaLon = Math.toRadians(other.longitude - longitude);
+        return distanceInMeters(this, other);
+    }
+
+    public static double distanceInMeters(Localization from, Localization to) {
+        double deltaLat = Math.toRadians(to.latitude - from.latitude);
+        double deltaLon = Math.toRadians(to.longitude - from.longitude);
         double sinDeltaLat = Math.sin(deltaLat / 2);
         double sinDeltaLon = Math.sin(deltaLon / 2);
-        double latRad = Math.toRadians(latitude);
-        double otherLatRad = Math.toRadians(other.latitude);
+        double latRad = Math.toRadians(from.latitude);
+        double otherLatRad = Math.toRadians(to.latitude);
         double a = sinDeltaLat * sinDeltaLat + sinDeltaLon * sinDeltaLon * Math.cos(latRad) * Math.cos(otherLatRad);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 

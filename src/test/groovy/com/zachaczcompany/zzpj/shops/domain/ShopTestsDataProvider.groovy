@@ -2,7 +2,6 @@ package com.zachaczcompany.zzpj.shops.domain
 
 import com.zachaczcompany.zzpj.commons.ZipCode
 import com.zachaczcompany.zzpj.shops.ShopCreateDto
-import com.zachaczcompany.zzpj.shops.ShopOutputDto
 import com.zachaczcompany.zzpj.shops.ShopUpdateDto
 import groovy.transform.NamedParam
 import groovy.transform.NamedVariant
@@ -38,11 +37,21 @@ class ShopTestsDataProvider {
         new ShopDetails(StockType.DETERGENTS, anyLocalization(), anyOpenHours())
     }
 
+    static ShopDetails shopDetailsWithLocalization(double lat, double lan) {
+        new ShopDetails(StockType.DETERGENTS, new Localization(lat, lan), anyOpenHours())
+    }
+
     static ShopStats anyShopStats() {
         new ShopStats(13, 13, 4)
     }
 
     static Shop anyShop() {
+        Shop shop = new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
+        shop.id = 1
+        return shop
+    }
+
+    static Shop shopWithLocalization(double lat, double lon) {
         Shop shop = new Shop("Leadl", anyAddress(), anyShopDetails(), anyShopStats())
         shop.id = 1
         return shop
