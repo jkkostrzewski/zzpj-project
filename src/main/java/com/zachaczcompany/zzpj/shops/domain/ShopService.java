@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 class ShopService {
-    private static final double NOTIFIER_PEOPLE_MULTIPLIER = 0.75;
+    public static final double NOTIFIER_PEOPLE_MULTIPLIER = 0.75;
 
     private final ApplicationEventPublisher eventPublisher;
     private final ShopSearchRepository searchRepository;

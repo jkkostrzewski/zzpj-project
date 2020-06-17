@@ -39,8 +39,8 @@ public class NotificationService {
         List<NotificationList> notificationList = repository.findByShopId(shop.getId());
 
         String title = shop.getName() + " is getting full!";
-        String description = shop.getName() + " is currently at >75% of its capacity. There is a possibility " +
-                "that you'll have to wait in a queue!";
+        String description = shop.getName() + " is currently at >" + ShopService.NOTIFIER_PEOPLE_MULTIPLIER * 100 +
+                "% of its capacity. There is a possibility that you'll have to wait in a queue!";
 
         Context context = new Context();
         context.setVariable("title", title);
