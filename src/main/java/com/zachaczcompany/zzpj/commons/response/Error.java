@@ -19,7 +19,7 @@ public class Error extends Response<String> {
     }
 
     public static Error concatCodes(Seq<Error> errors) {
-        var errorCodes = errors.map(e -> e.code).reduceLeft((a, b) -> a.concat(b + System.lineSeparator()));
+        var errorCodes = errors.map(e -> e.code).reduceLeft((a, b) -> a.concat(System.lineSeparator() + b));
         return new Error(errors.head().status, errorCodes);
     }
 

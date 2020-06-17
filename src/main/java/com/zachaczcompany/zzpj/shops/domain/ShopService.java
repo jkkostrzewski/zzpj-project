@@ -34,20 +34,25 @@ import java.util.stream.Collectors;
 
 @Service
 class ShopService {
+    public static final double NOTIFIER_PEOPLE_MULTIPLIER = 0.75;
+
     private final ApplicationEventPublisher eventPublisher;
     private final ShopSearchRepository searchRepository;
-    private final LocationRestService locationService;
     private final DistanceService distanceService;
     private final ShopRepository repository;
+    private final LocationRestService locationService;
+    private final NotificationService notificationService;
 
     @Autowired
     ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository,
-                ShopSearchRepository shopSearchRepository, LocationRestService locationService, DistanceService distanceService) {
+                ShopSearchRepository shopSearchRepository, LocationRestService locationService, DistanceService distanceService,
+                NotificationService notificationService) {
         this.eventPublisher = eventPublisher;
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
         this.locationService = locationService;
         this.distanceService = distanceService;
+        this.notificationService = notificationService;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -86,17 +91,25 @@ class ShopService {
         var deltaQueue = dto.getPeopleJoinedQueue() - dto.getPeopleLeftQueue() - dto.getPeopleEnteredShop();
 
         Function<Shop, Shop> save = repository::save;
+        Function<Shop, Shop> notify = s -> {
+            if(s.getShopStats().getPeopleInside() > s.getShopStats().getMaxCapacity() * NOTIFIER_PEOPLE_MULTIPLIER) {
+                notificationService.sendNotificationsToShopList(s);
+            }
+            notificationService.deleteExpiredNotifications();
+            return s;
+        };
         Function<Shop, ShopStatsDto> mapToDto = s -> new ShopStatsDto(s.getShopStats());
-        var saveAndMap = save.andThen(mapToDto);
+        var saveAndNotifyAndMap = save.andThen(notify).andThen(mapToDto);
 
         return Try.of(() -> shop.updatePeople(deltaInside, deltaQueue))
                   .andThen(this::publishShopStatsChangedEvent)
                   .toEither(Error.badRequest("CANNOT_UPDATE_STATS"))
-                  .map(saveAndMap);
+                  .map(saveAndNotifyAndMap);
     }
 
     private void publishShopStatsChangedEvent(Shop shop) {
         var event = new ShopStatsChangedEvent(shop);
+
         eventPublisher.publishEvent(event);
     }
 
