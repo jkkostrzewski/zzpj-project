@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ public class Opinion {
     private Long id;
 
     @OneToOne
+    @JsonIgnore
     private Shop shop;
 
     @Column(nullable = false)
