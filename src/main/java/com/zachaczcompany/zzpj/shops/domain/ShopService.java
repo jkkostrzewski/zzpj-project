@@ -78,22 +78,24 @@ class ShopService {
         var deltaQueue = dto.getPeopleJoinedQueue() - dto.getPeopleLeftQueue() - dto.getPeopleEnteredShop();
 
         Function<Shop, Shop> save = repository::save;
+        Function<Shop, Shop> notify = s -> {
+            if(s.getShopStats().getPeopleInside() > s.getShopStats().getMaxCapacity() * NOTIFIER_PEOPLE_MULTIPLIER) {
+                notificationService.sendNotificationsToShopList(s);
+            }
+            notificationService.deleteExpiredNotifications();
+            return s;
+        };
         Function<Shop, ShopStatsDto> mapToDto = s -> new ShopStatsDto(s.getShopStats());
-        var saveAndMap = save.andThen(mapToDto);
+        var saveAndNotifyAndMap = save.andThen(notify).andThen(mapToDto);
 
         return Try.of(() -> shop.updatePeople(deltaInside, deltaQueue))
                   .andThen(this::publishShopStatsChangedEvent)
                   .toEither(Error.badRequest("CANNOT_UPDATE_STATS"))
-                  .map(saveAndMap);
+                  .map(saveAndNotifyAndMap);
     }
 
     private void publishShopStatsChangedEvent(Shop shop) {
         var event = new ShopStatsChangedEvent(shop);
-
-        if(shop.getShopStats().getPeopleInside() > shop.getShopStats().getMaxCapacity() * NOTIFIER_PEOPLE_MULTIPLIER) {
-            notificationService.sendNotificationsToShopList(shop);
-        }
-        notificationService.deleteExpiredNotifications();
 
         eventPublisher.publishEvent(event);
     }

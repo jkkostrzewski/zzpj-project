@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface NotificationListRepository extends CrudRepository<NotificationList, Long> {
     List<NotificationList> findByShopId(long shopId);
-    List<NotificationList> findByNotificationEndGreaterThan(Timestamp currentTime);
+    List<NotificationList> findByNotificationEndBefore(Timestamp currentTime);
     boolean existsByEmail(String email);
 }

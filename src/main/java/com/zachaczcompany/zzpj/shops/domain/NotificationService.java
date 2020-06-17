@@ -55,7 +55,7 @@ public class NotificationService {
 
     public void deleteExpiredNotifications() {
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        List<NotificationList> expired = repository.findByNotificationEndGreaterThan(currentTime);
+        List<NotificationList> expired = repository.findByNotificationEndBefore(currentTime);
         expired.forEach(repository::delete);
     }
 
