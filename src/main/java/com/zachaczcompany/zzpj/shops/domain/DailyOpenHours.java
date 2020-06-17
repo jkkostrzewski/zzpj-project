@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
+import com.zachaczcompany.zzpj.shops.domain.validation.openHours.ValidOpenHours;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,5 +1,6 @@
 package com.zachaczcompany.zzpj.shops.domain
 
+import com.zachaczcompany.zzpj.distance.DistanceService
 import com.zachaczcompany.zzpj.location.integration.LocationRestService
 import com.zachaczcompany.zzpj.shops.ShopCreateDto
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto
@@ -17,10 +18,11 @@ class ShopServiceSpec extends Specification {
     ShopSearchRepository shopSearchRepository = Mock(ShopSearchRepository)
     LocationRestService locationRestService = Mock(LocationRestService)
     ApplicationEventPublisher eventPublisher = Mock(ApplicationEventPublisher)
+    DistanceService distanceService = Mock(DistanceService)
     NotificationService notificationService = Mock(NotificationService)
-    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService,
-            notificationService)
-
+    ShopService shopService = new ShopService(eventPublisher, shopRepository, shopSearchRepository, locationRestService, 
+    distanceService, notificationService)
+    
     def 'should get open hours from dto'() {
         given: 'shop create dto'
         def openFrom = LocalTime.of(7, 30)

@@ -1,4 +1,6 @@
-package com.zachaczcompany.zzpj.shops.domain;
+package com.zachaczcompany.zzpj.shops.domain.validation.openHours;
+
+import com.zachaczcompany.zzpj.shops.domain.DailyOpenHours;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

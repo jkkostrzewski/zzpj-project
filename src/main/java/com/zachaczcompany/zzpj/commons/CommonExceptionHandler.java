@@ -14,13 +14,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
@@ -39,14 +37,6 @@ public class CommonExceptionHandler extends ResponseEntityExceptionHandler {
                              .body(getBindingErrorResponseBody(ex.getBindingResult()));
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity handleBindException(ConstraintViolationException e) {
-        return ResponseEntity.badRequest()
-                             .body(e.getConstraintViolations()
-                                    .stream()
-                                    .collect(Collectors.toMap(this::getRejectedValueName,
-                                            FieldErrorDto::fromConstraintViolation)));
-    }
 
     @ExceptionHandler({IllegalArgumentException.class})
     protected ResponseEntity<Object> handleIllegalArgumentException(Exception ex, WebRequest request) {

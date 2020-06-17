@@ -30,3 +30,5 @@ locationiq:
     format: json
     url: https://${locationiq.rest-api.region}.locationiq.com/v1/
     key: c6e6dd0380d596
+    numberOfRequests: 2
+    toleranceRatio: 2.0
