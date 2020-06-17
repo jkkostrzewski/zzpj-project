@@ -1,6 +1,8 @@
 package com.zachaczcompany.zzpj.shops.domain;
 
+import com.zachaczcompany.zzpj.shops.domain.validation.distance.ValidDistanceCriteria;
 import io.vavr.Function3;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,15 +30,18 @@ public class ShopFilterCriteria {
     private Boolean canEnter;
     private Integer maxQueueLength;
     private Integer maxCapacity;
+    @Getter
+    @ValidDistanceCriteria
+    private DistanceCriteria distance;
 
     Specification<Shop> toSpecification() {
-        return getAddress().and(getStockType()
-                .and(getAddress()
-                        .and(isOpen()
-                                .and(canEnter()
-                                        .and(getMaxCapacity()
-                                                .and(getMaxQueueLength()
-                                                        .and(getName())))))));
+        return getAddress().and(getStockType())
+                           .and(getAddress())
+                           .and(isOpen())
+                           .and(canEnter())
+                           .and(getMaxCapacity())
+                           .and(getMaxQueueLength())
+                           .and(getName());
     }
 
     Specification<Shop> getName() {
