@@ -6,6 +6,7 @@ import com.zachaczcompany.zzpj.security.jwt.JwtCredentialsAuthenticationRequest;
 import com.zachaczcompany.zzpj.security.jwt.JwtTokenVerifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -43,7 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtCredentialsAuthenticationRequest(authenticationManager(), jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtCredentialsAuthenticationRequest.class)
                 .authorizeRequests()
-                .antMatchers("/login", "/register/owner", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .antMatchers("/login", "/register/owner", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/console/**")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/opinion/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/opinion").permitAll()
+                .antMatchers(HttpMethod.GET, "/shops/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/report/**").permitAll()
                 .anyRequest()
                 .authenticated();
         http.headers().frameOptions().disable();
