@@ -2,37 +2,33 @@ package com.zachaczcompany.zzpj.shops.domain;
 
 import com.zachaczcompany.zzpj.commons.ZipCode;
 import com.zachaczcompany.zzpj.commons.response.Error;
+import com.zachaczcompany.zzpj.distance.DistanceCalculationStrategy;
+import com.zachaczcompany.zzpj.distance.DistanceService;
+import com.zachaczcompany.zzpj.distance.LocationApiDistance;
+import com.zachaczcompany.zzpj.distance.StraightLineDistance;
 import com.zachaczcompany.zzpj.history.shopStats.ShopStatsChangedEvent;
 import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.shops.ShopCreateDto;
 import com.zachaczcompany.zzpj.shops.ShopOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopStatsDto;
-import com.zachaczcompany.zzpj.shops.ShopWithDistanceOutputDto;
 import com.zachaczcompany.zzpj.shops.ShopUpdateDto;
+import com.zachaczcompany.zzpj.shops.ShopWithDistanceOutputDto;
 import com.zachaczcompany.zzpj.shops.StatisticsUpdateDto;
-import com.zachaczcompany.zzpj.shops.distance.DistanceCalculator;
-import com.zachaczcompany.zzpj.shops.distance.LocationApiDistance;
-import com.zachaczcompany.zzpj.shops.distance.StraightLineDistance;
 import com.zachaczcompany.zzpj.shops.exceptions.IllegalShopOperation;
 import com.zachaczcompany.zzpj.shops.exceptions.LocationNotFoundException;
-import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,21 +37,17 @@ class ShopService {
     private final ApplicationEventPublisher eventPublisher;
     private final ShopSearchRepository searchRepository;
     private final LocationRestService locationService;
+    private final DistanceService distanceService;
     private final ShopRepository repository;
-    private final int limitOfRequests;
-    private final double toleranceRatio;
 
     @Autowired
     ShopService(ApplicationEventPublisher eventPublisher, ShopRepository repository,
-                ShopSearchRepository shopSearchRepository, LocationRestService locationService,
-                @Value("${locationiq.rest-api.numberOfRequests}") int limitOfRequests,
-                @Value("${locationiq.rest-api.toleranceRatio}") double toleranceRatio) {
+                ShopSearchRepository shopSearchRepository, LocationRestService locationService, DistanceService distanceService) {
         this.eventPublisher = eventPublisher;
         this.repository = repository;
         this.searchRepository = shopSearchRepository;
         this.locationService = locationService;
-        this.limitOfRequests = limitOfRequests;
-        this.toleranceRatio = toleranceRatio;
+        this.distanceService = distanceService;
     }
 
     private static Address getAddress(ShopCreateDto dto) {
@@ -67,13 +59,13 @@ class ShopService {
     private ShopDetails getDetails(ShopCreateDto dto) throws LocationNotFoundException {
         LocalizationStrategy strategy = dto.hasLocalization() ? new LocalizationDefaultStrategy() :
                 new LocalizationApiStrategy(locationService);
-        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto));
+        return new ShopDetails(dto.getStockType(), strategy.getLocalization(dto), getOpenHours(dto.getOpenHours()));
     }
 
     private static OpenHours getOpenHours(List<ShopCreateDto.OpenHours> openHours) {
         var daily = openHours.stream()
-                       .map(ShopService::getDailyOpenHours)
-                       .collect(Collectors.toSet());
+                             .map(ShopService::getDailyOpenHours)
+                             .collect(Collectors.toSet());
         return new OpenHours(daily);
     }
 
@@ -139,10 +131,6 @@ class ShopService {
     }
 
     Iterable<ShopOutputDto> findAll(ShopFilterCriteria criteria, Pageable pageable) {
-        var inaccurateStrategy = new StraightLineDistance();
-        var accurateStrategy = new LocationApiDistance(locationService, inaccurateStrategy);
-        var distanceCalculator = new DistanceCalculator(inaccurateStrategy, accurateStrategy);
-
         Specification<Shop> spec = criteria.toSpecification();
         var allShops = repository.findAll(spec, pageable)
                                  .stream()
@@ -157,52 +145,23 @@ class ShopService {
                            .collect(Collectors.toList());
         }
 
-        var closestShops = getClosestShops(allShops, distanceCalculator, distanceCriteria);
-        var closestByApi = getClosestShopsUsingApi(closestShops, distanceCalculator, distanceCriteria);
+        var inaccurateStrategy = new StraightLineDistance();
+        var accurateStrategy = new LocationApiDistance(locationService, inaccurateStrategy);
 
-        return closestByApi.isEmpty() ? getOutputList(closestShops, false) : getOutputList(closestByApi, true);
+        var closestShopsWithDistance = distanceService.getClosestShops(allShops, inaccurateStrategy, distanceCriteria);
+        var closestShops = closestShopsWithDistance.stream()
+                                                   .map(Tuple2::_1)
+                                                   .collect(Collectors.toUnmodifiableList());
+
+        var closestByApi = distanceService.getClosestShops(closestShops, accurateStrategy, distanceCriteria);
+
+        return closestByApi.isEmpty() ? getOutputList(closestShopsWithDistance, inaccurateStrategy) :
+                getOutputList(closestByApi, accurateStrategy);
     }
 
-    private Iterable<ShopOutputDto> getOutputList(List<Tuple2<Shop, Double>> closestShops, boolean accurate) {
+    private Iterable<ShopOutputDto> getOutputList(List<Tuple2<Shop, Double>> closestShops, DistanceCalculationStrategy strategy) {
         return closestShops.stream()
-                           .map(t -> new ShopWithDistanceOutputDto(t._1, t._2, accurate))
+                           .map(t -> new ShopWithDistanceOutputDto(t._1, t._2, strategy.isAccurate()))
                            .collect(Collectors.toList());
-    }
-
-    private List<Tuple2<Shop, Double>> getClosestShops(List<Shop> shops, DistanceCalculator distanceCalculator, DistanceCriteria distanceCriteria) {
-        return shops.stream()
-                    .map(shop -> toTupleWithInaccurateDistance(shop, distanceCriteria, distanceCalculator))
-                    .filter(t -> isCloseEnough(t, distanceCriteria))
-                    .sorted(Comparator.comparing(t -> t._2))
-                    .limit(this.limitOfRequests)
-                    .collect(Collectors.toUnmodifiableList());
-    }
-
-    private List<Tuple2<Shop, Double>> getClosestShopsUsingApi(List<Tuple2<Shop, Double>> closestShops, DistanceCalculator distanceCalculator, DistanceCriteria distanceCriteria) {
-        return closestShops.stream()
-                           .map(Tuple2::_1)
-                           .map(s -> toTupleWithAccurateDistance(s, distanceCriteria, distanceCalculator))
-                           .sorted(Comparator.comparing(t -> t._2))
-                           .collect(Collectors.toUnmodifiableList());
-    }
-
-    private boolean isCloseEnough(Tuple2<Shop, Double> tuple, DistanceCriteria criteria) {
-        return tuple._2 <= toleranceRatio * criteria.getRadius();
-    }
-
-    private Tuple2<Shop, Double> toTupleWithInaccurateDistance(Shop shop, DistanceCriteria distanceCriteria, DistanceCalculator calculator) {
-        return toTupleWithDistance(shop, distanceCriteria, calculator::inaccurateDistance);
-    }
-
-    private Tuple2<Shop, Double> toTupleWithAccurateDistance(Shop shop, DistanceCriteria distanceCriteria, DistanceCalculator calculator) {
-        return toTupleWithDistance(shop, distanceCriteria, calculator::accurateDistance);
-    }
-
-    private Tuple2<Shop, Double> toTupleWithDistance(Shop shop, DistanceCriteria criteria, BiFunction<Localization, Localization, Double> calculator) {
-        var from = criteria.getLocalization();
-        var to = shop.getLocalization();
-
-        double calculated = calculator.apply(from, to);
-        return Tuple.of(shop, calculated);
     }
 }

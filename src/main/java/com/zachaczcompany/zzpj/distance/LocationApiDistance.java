@@ -1,4 +1,4 @@
-package com.zachaczcompany.zzpj.shops.distance;
+package com.zachaczcompany.zzpj.distance;
 
 import com.zachaczcompany.zzpj.location.integration.LocationRestService;
 import com.zachaczcompany.zzpj.location.model.Route;
@@ -31,5 +31,10 @@ public class LocationApiDistance implements DistanceCalculationStrategy {
                             .mapToDouble(d -> d)
                             .max()
                             .orElseThrow();
+    }
+
+    @Override
+    public boolean isAccurate() {
+        return true;
     }
 }
