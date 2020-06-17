@@ -1,5 +1,8 @@
 package com.zachaczcompany.zzpj.reports;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.vavr.control.Either;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,11 @@ public class ReportsController {
         this.reportsGenerator = reportsGenerator;
     }
 
+    @Operation(summary = "Get search report for one shop", description = "Requires shop id in param")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful report download"),
+            @ApiResponse(responseCode = "404", description = "Shop with that id does not exist")
+    })
     @GetMapping("/searchStatistics/{id}")
     public ResponseEntity<byte[]> getSearchStatistics(@RequestParam ReportTypes reportType, @PathVariable long id) {
         Either<String, byte[]> searchStatistics = reportsGenerator.getSearchStatistics(reportType, id);
@@ -28,6 +36,11 @@ public class ReportsController {
                 e -> getResponseFile("opinions", reportType, e));
     }
 
+    @Operation(summary = "Get opinion report for one shop", description = "Requires shop id in param")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful shop statistics get"),
+            @ApiResponse(responseCode = "404", description = "Shop with that id does not exist")
+    })
     @GetMapping("/opinions/{id}")
     public ResponseEntity<byte[]> getOpinions(@RequestParam ReportTypes reportType, @PathVariable long id) {
         Either<String, byte[]> opinions = reportsGenerator.getOpinions(reportType, id);
