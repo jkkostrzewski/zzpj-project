@@ -14,7 +14,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @NoArgsConstructor
-class Opinion {
+public class Opinion {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
