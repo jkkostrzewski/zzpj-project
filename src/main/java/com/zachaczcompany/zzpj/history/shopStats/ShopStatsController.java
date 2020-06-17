@@ -1,5 +1,8 @@
 package com.zachaczcompany.zzpj.history.shopStats;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,11 @@ class ShopStatsController {
         this.service = service;
     }
 
+    @Operation(summary = "Get statistics history for a shop", description = "Requires shop id in param")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful shop statistics get"),
+            @ApiResponse(responseCode = "400", description = "Shop with that id does not exist")
+    })
     @GetMapping
     ResponseEntity getDiffs(@RequestParam long shopId) {
         return service.getDiffsForShop(shopId).toResponseEntity();
